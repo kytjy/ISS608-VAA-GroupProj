@@ -2,18 +2,44 @@ project:
   type: website
 
 website:
-  title: "ISS608-VAA-GroupProj"
+  title: "Visual Analytics and Application"
+  image: "Images/Logo.png"
+  favicon: "Images/Icon.png"
+  page-navigation: true
   navbar:
-    left:
-      - href: index.qmd
-        text: Home
-      - about.qmd
-
+    logo: "Images/Logo.png"
+    title: false
+    collapse-below: lg
+    search: true
+    right: 
+      - text: "Team"
+        href: about.qmd
+      - text: "Proposal"
+        href: "proposal/proposal.html"
+      - text: "Task 1"
+        href: "task1/task1.html"   
+      - text: "Task 2"
+        href:  "task2/task2.html"  
+      - text: "Shiny App"
+        menu: 
+          - text: User Guide
+            href: "shinyapp/shinyapp1.html"
+          - text: Shiny App
+            href: "shinyapp/shinyapp2.html"
+      - text: "Project Overview"
+        href:  "poster/poster.html"            
+  
 format:
   html:
-    theme: cosmo
-    css: styles.css
+    grid:
+      margin-width: 250px
     toc: true
+    toc_float: true
+    theme: 
+      - theme.scss
+    highlight-style: tango
+    code-copy: hover
+    code-overflow: wrap
+    css: styles.css
 
 editor: visual
-

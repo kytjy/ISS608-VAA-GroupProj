@@ -1,0 +1,463 @@
+---
+title: "Here in Loompa land, it's both luscious and green"
+title-block-banner: true
+toc: true
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+  html:
+    code-fold: True
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+# 9 Visual Statistical Analysis
+
+## 9.1 Learning Outcome
+
+In this hands-on exercise, you will gain hands-on experience on using:
+
+-   ggstatsplot package to create visual graphics with rich statistical information,
+
+-   performance package to visualise model diagnostics, and
+
+-   parameters package to visualise model parameters
+
+## 9.2 Visual Statistical Analysis with **ggstatsplot**
+
+-   [**ggstatsplot**](https://indrajeetpatil.github.io/ggstatsplot/) is an extension of [**ggplot2**](https://ggplot2.tidyverse.org/) package for creating graphics with details from statistical tests included in the information-rich plots themselves.
+
+    -   To provide alternative statistical inference methods by default.
+
+    -   To follow best practices for statistical reporting. For all statistical tests reported in the plots, the default template abides by the [APA](https://my.ilstu.edu/~jhkahn/apastats.html) gold standard for statistical reporting. 
+
+::: callout-note
+-   parameter refers to the degree of freedom
+
+-   An effect size of 0.77 is a standardized measure of the magnitude of a treatment or intervention effect, or the strength of an association between two variables. Guideline is that an effect size of 0.2 is considered small, 0.5 is considered moderate, and 0.8 is considered large.
+
+-   CI of 95% means if we replicate our sampling from underlying distribution many times, 95% of our samples will have their means within this interval.
+:::
+
+## 9.3 Getting Started
+
+### 9.3.1 Installing and launching R packages
+
+In this exercise, **ggstatsplot** and **tidyverse** will be used.
+
+```{r}
+pacman::p_load(ggstatsplot, tidyverse,nortest, ggdist)
+```
+
+### 9.3.2 Importing data
+
+Lets import the Exam_data.csv using the read_xls() function.
+
+```{r}
+exam <- read_csv('data/Exam_data.csv')
+```
+
+Take a glimpse at the data.
+
+```{r}
+exam
+```
+
+```{r}
+glimpse(exam)
+```
+
+### 9.3.3 One-sample test: *gghistostats()* method
+
+In the code chunk below, [*gghistostats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/gghistostats.html) is used to to build an visual of one-sample test on English scores.
+
+-   A one-sample test is a statistical hypothesis test used to determine whether the mean of a single sample of data differs significantly from a known or hypothesized value.
+
+-   It is a statistical test that compares the mean of a sample to a specified value, such as a population mean, to see if there is enough evidence to reject the null hypothesis that the sample comes from a population with the specified mean.
+
+H0: EL average score is 60.
+
+```{r}
+set.seed(1234)  #<<< important to set if we use bayes statistics
+
+gghistostats(data=exam,
+             x = ENGLISH,
+             type='bayes',  #<< '
+             test.value =60,
+             xlab = 'English scores')
+```
+
+### 9.3.4 Unpacking the Bayes Factor
+
+-   A Bayes factor is the ratio of the likelihood of one particular hypothesis to the likelihood of another. It can be interpreted as a measure of the strength of evidence in favor of one theory among two competing theories.
+
+-   That's because the Bayes factor gives us a way to evaluate the data in favor of a null hypothesis, and to use external information to do so. It tells us what the weight of the evidence is in favor of a given hypothesis.
+
+-   When we are comparing two hypotheses, H1 (the alternate hypothesis) and H0 (the null hypothesis), the Bayes Factor is often written as B10. It can be defined mathematically as
+
+-   The [**Schwarz criterion**](https://www.statisticshowto.com/bayesian-information-criterion/) is one of the easiest ways to calculate rough approximation of the Bayes Factor.
+
+### 9.3.5 How to interpret Bayes Factor
+
+A **Bayes Factor** can be any positive number. One of the most common interpretations is this one---first proposed by Harold Jeffereys (1961) and slightly modified by [Lee and Wagenmakers](https://www-tandfonline-com.libproxy.smu.edu.sg/doi/pdf/10.1080/00031305.1999.10474443?needAccess=true) in 2013:
+
+
+#### 9.3.5.1 How to perform a one-sample wilcoxon test
+
+[Reference website from r-bloggers](https://www.r-bloggers.com/2022/07/one-sample-wilcoxon-test-in-r/)
+
+The one-sample Wilcoxon test (non parametric) will tell us whether the scores are *significantly* different from 60 or not (and thus whether they are different from 60 in the population or not)
+
+H0: EL scores = 60
+
+H1: EL scores != 60
+
+The scores are assumed to be independent (a student's score is not impacted or influenced by the score of another student)
+
+```{r}
+wilcox.test(exam$ENGLISH,
+            mu = 60)
+```
+
+**Interpretation**
+
+P-value\<0.05, we have enough statistical evidence to reject the null hypothesis and conclude that the EL scores are significantly different from 60.
+
+::: callout-note
+By default, it is a two-tailed test that is done. As for the t.test() function, we can specify that a one-sided test is required by using either the alternative = "greater" or alternative = "less argument in the wilcox.test() function.
+:::
+
+**Combine statistical test and plot**
+
+```{r}
+set.seed(1234)
+
+gghistostats(data=exam,
+             x = ENGLISH,
+             type='nonparametric', #nonparametric (median) = Wilcoxon, parametric = t-test (default is look for mean and unequal variance method)
+             test.value =60,
+             conf.level = 0.95,
+             xlab = 'English scores')
+```
+
+Did we forget to check if English scores follow a normal distribution? Use ad.test from nortest library.
+
+H0: EL scores follows normal distribution
+
+H1: EL scores do not follow normal distribution.
+
+```{r}
+ad.test(exam$ENGLISH)
+```
+
+Results from the Anderson_darling normality test shows enough statistical evidence to reject the null hypothesis and conclude that the EL scores do not follow normal distribution . Thus the use of non parametric test is correct.
+
+::: callout-important
+## On Parametric and Non-parametric types
+
+type= parametric: default look for **mean** and assumes **unequal variance** method
+
+type = Non parametric: student-t test and use **median** (not mean!!)
+:::
+
+### 9.3.6 Two-sample mean test: *ggbetweenstats()*
+
+In the code chunk below, [*ggbetweenstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html) is used to build a visual for two-sample mean test of Maths scores by gender (independent).
+
+H0: Mean of F and M Math scores are the same.
+
+H1: Mean of F and M Math scores are not the same.
+
+```{r}
+ggbetweenstats(data=exam,
+               x=GENDER,
+               y=MATHS,
+               type='np',
+               messages=FALSE)
+```
+
+Default information: - statistical details - Bayes Factor - sample sizes - distribution summary
+
+Since p-value \> 0.05, we do not have enough statistical evidence to reject the null hypothesis that mean of Math scores of both gender are the same.
+
+However, if we check for normality of Math scores of each gender.
+
+```{r}
+# perform Shapiro-Wilk test on math scores by gender
+shapiro_test <- by(exam$MATHS, exam$GENDER, shapiro.test)
+
+# extract p-values
+p_values <- sapply(shapiro_test, function(x) x$p.value)
+# print results
+print(p_values)
+```
+
+::: callout-note
+The **`by()`** function is used to apply a function to subsets of a data frame or vector split by one or more factors. In the above code, we use **`by()`** to split the **`math_score`** column by **`gender`**, and apply the **`shapiro.test()`** function to each group.
+:::
+
+H0: Math scores by gender follows normal distribution.
+
+H1: Math scores by gender do not follow normal distribution.
+
+From the Shapiro-Wilk test results, we have enough statistical evidence to reject the null hypothesis and conclude that the Math scores by gender does not follow a normal distribution. Thus the use of 'np' is appropriate.
+
+### 9.3.7 Oneway ANOVA Test: *ggbetweenstats()* method
+
+In the code chunk below, [*ggbetweenstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbetweenstats.html) is used to build a visual for One-way ANOVA test on English score by race (Independent 4 sample mean).
+
+```{r}
+ggbetweenstats(
+  data = exam,
+  x = RACE, 
+  y = ENGLISH,
+  type = "p",
+  mean.ci=TRUE,
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",  # 'ns': shows only non-sig, 's': shows only sig, 'all': both 
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+## might need to call library(PMCMRplus) and library(rstantools) if this code chunck doesnt work.
+```
+
+Since p-value \< 0.05, we have enough statistical evidence to reject the null hypothesis and conclude that NOT ALL means of EL scores by race are the same. The results shows that the means of EL scores of Chinese, Indian and Malay are significantly different.
+
+Once again, lets go backwards and confirm that the distribution of EL scores by RACE conforms to normal distribution.
+
+```{r}
+# perform Shapiro-Wilk test on math scores by gender
+shapiro_test <- by(exam$ENGLISH, exam$RACE, shapiro.test)
+
+# extract p-values
+p_values <- sapply(shapiro_test, function(x) x$p.value)
+# print results
+print(p_values)
+```
+
+H0: EL scores by Race follow normal distribution. H1: EL scores by Race do not follow normal distribution.
+
+The results of the Shapiro-wilk test shows p_value of all EL score distribution by race follows normal distribution.
+
+#### 9.3.7.1 ggbetweenstats - Summary of tests
+
+1.  type argument entered by us will determine the centrality tendency measure displayed
+
+-   **mean** for parametric statistics
+
+-   **median** for non-parametric statistics
+
+-   **trimmed mean** for robust statistics
+
+-   **MAP estimator** for Bayesian statistics
+
+### 9.3.8 Significant Test of Correlation: *ggscatterstats()*
+
+Earlier, we have checked that EL scores do not follow a normal distribution. Now we will do the same for Math scores.
+
+```{r}
+ad.test(exam$MATHS)
+```
+
+Since the p-value \< 0.05, we have enough statistical evidence to reject the null hypothesis and conclude that the Math scores also do not follow normal distribution.
+
+In the code chunk below, [*ggscatterstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggscatterstats.html) is used to build a visual for Significant Test of Correlation between Maths scores and English scores.
+
+```{r}
+ggscatterstats(
+  data = exam,
+  x = MATHS,
+  y = ENGLISH,
+  type='nonparametric', # 'parametric', 'robust', 'bayes'
+  marginal = FALSE,
+  )
+```
+
+::: callout-note
+I have chosen a non parametric version of this test as both Math and EL scores do not follow normal distribution.
+:::
+
+### 9.3.9 Significant Test of Association (Dependence) : *ggbarstats()* methods
+
+In the code chunk below, the Maths scores is binned into a 4-class variable by using [*cut()*](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cut).
+
+We will create a new dataframe exam1 similar to exam df but with extra column called 'MATHS_bins'.
+
+```{r}
+exam1 <- exam %>% 
+  mutate(MATHS_bins = 
+           cut(MATHS, 
+               breaks = c(0,60,75,85,100))
+)
+```
+
+```{r}
+exam1
+```
+
+In this code chunk below [*ggbarstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbarstats.html) is used to build a visual for Significant Test of Association.
+
+(Two categorical variables) H0: There is no association between mathbin and gender.
+
+H1: There is an association between mathbin and gender.
+
+```{r}
+ggbarstats(exam1,
+            x=MATHS_bins,
+            y=GENDER)
+```
+
+From the results above , p-value \> 0.05 thus we have not enough statistical evidence to reject the null hypothesis that there is not association between the mathbin and gender variables.
+
+## 9.4 Visualising Models
+
+In this section, I will learn how to visualise model diagnostic and model parameters by using parameters package.
+
+-   Toyota Corolla case study will be used. The purpose of study is to build a model to discover factors affecting prices of used-cars by taking into consideration a set of explanatory variables.
+
+## 9.5 Getting Started
+
+## 9.6 Installing and loading the required libraries
+
+```{r}
+pacman::p_load(readxl, performance, parameters, see)
+```
+
+### 9.6.1 Importing Excel file: readxl methods
+
+In the code chunk below, [*read_xls()*](https://readxl.tidyverse.org/reference/read_excel.html) of [**readxl**](https://readxl.tidyverse.org/) package is used to import the data worksheet of `ToyotaCorolla.xls` workbook into R.
+
+```{r}
+car_resale <- read_xls('data/ToyotaCorolla.xls',
+                       sheet='data')
+```
+
+```{r}
+glimpse(car_resale)
+```
+
+Notice that the output object `car_resale` is a tibble data frame.
+
+### 9.6.2 Multiple Regression Model using lm()
+
+The code chunk below is used to calibrate a multiple linear regression model by using *lm()* of Base Stats of R.
+
+```{r}
+model <- lm(Price ~ Age_08_04 + Mfg_Year + KM + Weight + Guarantee_Period,
+            data=car_resale)
+model
+```
+
+### 9.6.3 Model Diagnostic: checking for multicolinearity:
+
+In the code chunk, [*check_collinearity()*](https://easystats.github.io/performance/reference/check_collinearity.html) of [**performance**](https://easystats.github.io/performance/) package.
+
+```{r}
+check_collinearity(model)
+```
+
+```{r}
+check_c <- check_collinearity(model)
+plot(check_c)
+```
+
+We can see high collinearity between Age and Mfg_Year. One is derived from the other. We should remove one of them and repeat muliti collinearity check again for the new model.
+
+### 9.6.4 Model Diagnostic: checking normality assumption
+
+In the code chunk, [*check_normality()*](https://easystats.github.io/performance/reference/check_normality.html) of [**performance**](https://easystats.github.io/performance/) package.
+
+Notice that the Mfg_Year variable has been removed from the independent variables list.
+
+```{r}
+model1 <- lm(Price ~ Age_08_04 + KM + 
+              Weight + Guarantee_Period, data = car_resale)
+```
+
+```{r}
+check_c1 <- check_collinearity(model1)
+plot(check_c1)
+```
+
+```{r}
+check_n <- check_normality(model1)
+```
+
+```{r}
+plot(check_n)
+```
+
+::: callout-note
+## Recap: Assumptions of linear regression
+
+In linear regression, one of the key assumptions is that the residuals (the differences between the predicted values and the actual values) are normally distributed. The normality assumption is important because it affects the validity of statistical inference procedures such as hypothesis testing and confidence intervals.
+
+If the residuals are not normally distributed, it may indicate that the linear regression model is not a good fit for the data and that alternative modeling approaches may be needed.
+:::
+
+### 9.6.5 Model Diagnostic: Check model for homogeneity of variances
+
+In the code chunk, [*check_heteroscedasticity()*](https://easystats.github.io/performance/reference/check_heteroscedasticity.html) of [**performance**](https://easystats.github.io/performance/) package.
+
+Heteroscedasticity refers to a situation where the variance of the **errors (or residuals)** in the linear regression model is not constant across different levels of the predictor variable(s).
+
+If heteroscedasticity is detected, there are several ways to address it, including transforming the data, using weighted least squares regression, or using robust standard errors. In DAl, we rebuild another model by creating subclasses out of the original Y variable.
+
+```{r}
+check_h <- check_heteroscedasticity(model1)
+```
+
+```{r}
+plot(check_h)
+```
+
+From the graph above, there is a slight sign of heteroscedasticity as the residuals seem to be funnelled outwards as the fitted values increase.
+
+### 9.6.6 Model Diagnostic: Complete check
+
+We can also perform the complete check by using [*check_model()*](https://easystats.github.io/performance/reference/check_model.html).
+
+```{r}
+#| fig-width: 14
+#| fig-height: 25
+check_model(model1)
+```
+
+### 9.6.7 Visualising Regression Parameters: see() methods
+
+In the code below, plot() of see package and parameters() of parameters package is used to visualise the parameters of a regression model.
+
+```{r}
+plot(parameters(model1))
+```
+
+### 9.6.8 Visualising Regression Parameters: *ggcoefstats()* methods
+
+In the code below, [*ggcoefstats()*](https://indrajeetpatil.github.io/ggstatsplot/reference/ggcoefstats.html) of ggstatsplot package to visualise the parameters of a regression model.
+
+```{r}
+ggcoefstats(model1, 
+            output = "plot")
+```
+
+
+::: {.callout-note}
+Note that there are five types of callouts, including:
+`note`, `warning`, `important`, `tip`, and `caution`.
+:::
+
+::: {.callout-tip}
+## Tip with Title
+
+This is an example of a callout with a title.
+:::
+
+::: {.callout-caution collapse="true"}
+## Expand To Learn About Collapse
+
+This is an example of a 'folded' caution callout that can be expanded by the user. You can use `collapse="true"` to collapse it by default or `collapse="false"` to make a collapsible callout that is expanded by default.
+:::
