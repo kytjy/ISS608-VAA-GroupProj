@@ -1,9 +1,5 @@
 ---
-title: "About"
+title: "About the Team"
 ---
 
-About this site
-
-```{r}
-1 + 1
-```
+![](Images/team.PNG){fig-align="center" width="40%"}
