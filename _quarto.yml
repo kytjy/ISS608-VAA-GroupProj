@@ -2,7 +2,7 @@ project:
   type: website
 
 website:
-  title: "Visual Analytics and Application"
+  title: "Project PISA"
   image: "Images/Logo.png"
   favicon: "Images/Icon.png"
   page-navigation: true
@@ -16,10 +16,6 @@ website:
         href: about.qmd
       - text: "Proposal"
         href: "proposal/proposal.html"
-      - text: "Task 1"
-        href: "task1/task1.html"   
-      - text: "Task 2"
-        href:  "task2/task2.html"  
       - text: "Shiny App"
         menu: 
           - text: User Guide
