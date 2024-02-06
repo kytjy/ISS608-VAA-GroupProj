@@ -74,7 +74,7 @@ For this project, CDA will be two-pronged. One, users can conduct hypothesis tes
 
 -   Streamgraph to analyse performance across time, where the width explains the longevity of explanatory variable and height provides the magnitude of impact to scores.
 
-# R Shiny Packages
+# R Packages
 
 | Package                                                                                                                                                              | Description                                                                                                                                         |
 |-------------|-----------------------------------------------------------|
