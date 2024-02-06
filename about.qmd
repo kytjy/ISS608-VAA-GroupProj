@@ -2,4 +2,4 @@
 title: "About the Team"
 ---
 
-![](Images/team.PNG){fig-align="center" width="40%"}
+![](Images/team.PNG){fig-align="center" width="70%"}

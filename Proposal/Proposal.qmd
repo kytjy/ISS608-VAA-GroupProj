@@ -32,7 +32,7 @@ Technical knowledge is required to perform accurate and reliable data wrangling 
 
 # Methodology
 
-The team will extract, analyse, and visualise the relationships between different factors and the PISA scores of Singapore students. Using various R packages, an interactive R shiny application with visual analytics techniques will be presented to enable the public to interact with the data based on their personal interests and circumstances, and draw their own insights and conclusions regarding the state of learning in Singapore.
+The team will extract, analyse, and visualise the relationships between different factors and the PISA scores of Singapore students. Using various R packages, an interactive R shiny application with visual analytics techniques will be presented to enable users to interact with the data based on their personal interests and circumstances, and draw their own insights and conclusions regarding the state of learning in Singapore.
 
 Users will be able to:
 
@@ -46,7 +46,7 @@ Overall, the research hopes to generate new knowledge on disparities in the dail
 
 # The Data
 
-The PISA measures how well 15-year-old students in different countries perform in the subjects of reading, mathematics, and science. The PISA surveys take place every three years -- the latest one was conducted in 2022, after the COVID-19 pandemic. The PISA 2022 database contains the full set of responses from individual students, school principals, teachers, and parents. This project focuses on the student questionnaire data file, retrieved from the [PISA Database](https://www.oecd.org/pisa/data/2022database/).
+The PISA Survey measures how well 15-year-old students in different countries perform in the subjects of reading, mathematics, and science. The PISA surveys take place every three years -- the latest one was conducted in 2022, after the COVID-19 pandemic. The PISA 2022 database contains the full set of responses from individual students, school principals, teachers, and parents. This project focuses on the student questionnaire data file, retrieved from the [PISA Database](https://www.oecd.org/pisa/data/2022database/).
 
 # Methodology and Analytical Approach
 
@@ -76,16 +76,68 @@ For this project, CDA will be two-pronged. One, users can conduct hypothesis tes
 
 # R Shiny Packages
 
-| Package                                                     | Description                                                   |
+| Package                                                                                                                                                              | Description                                                                                                                                         |
 |-------------|-----------------------------------------------------------|
-| [tidyverse](https://www.tidyverse.org/)                     |                                                               |
-| [DT](https://rstudio.github.io/DT/)                         | For interactive data tables                                   |
-| [ggstatplot](https://indrajeetpatil.github.io/ggstatsplot/) | To visual correlation matrix and plots with statistical tests |
-| [plotly](https://plotly.com/r/)                             | For interactive, publication-quality plots                    |
-|                                                             |                                                               |
-|                                                             |                                                               |
-|                                                             |                                                               |
-|                                                             |                                                               |
-|                                                             |                                                               |
+| [tidyverse](https://www.tidyverse.org/)                                                                                                                              | For data manipulation                                                                                                                               |
+| [DT](https://rstudio.github.io/DT/)                                                                                                                                  | For interactive data tables                                                                                                                         |
+| [ggstatplot](https://indrajeetpatil.github.io/ggstatsplot/)                                                                                                          | To visual correlation matrix and plots with statistical tests                                                                                       |
+| [plotly](https://plotly.com/r/)                                                                                                                                      | For interactive, publication-quality plots                                                                                                          |
+| [corrplot](https://www.rdocumentation.org/packages/corrplot/versions/0.92/topics/corrplot)                                                                           | For graphical display of correlation matrix.                                                                                                        |
+| [patchwork](https://patchwork.data-imaginist.com/)                                                                                                                   | For preparing composite figure created using ggplot2.                                                                                               |
+| [scales](https://scales.r-lib.org/)                                                                                                                                  | For data labels and annotations for ggplot2                                                                                                         |
+| [ggdist](https://mjskay.github.io/ggdist/)                                                                                                                           | For visualisations of distributions and uncertainty.                                                                                                |
+| [ggtext](https://wilkelab.org/ggtext/)                                                                                                                               | Supports improved text rendering for ggplot2.                                                                                                       |
+| [ggridges](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.htmlhttps://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) | For ridgeline plots that create the impression of a mountain range. They can be useful for visualising changes in distributions over time or space. |
+: {tbl-colwidths="[15,85]"}
 
 # Project Management
+
+Clear definitions of the project's objectives, knowledge of its limitations, identification of its risks, team member management, appropriate resource allocation to guarantee that tasks assigned can be completed, appropriate documentation, and regular updates on the project's status are all necessary components of good project management. In this project, we employ the use of a Gantt Chart track the timeline and tasks.
+
+Here is an overview of our project timeline:  
+
+```{r}
+#| echo: false
+
+pacman::p_load(plan)
+
+```
+
+```{r}
+#| echo: false
+
+par(bg="#f5f5eb")
+
+
+g <- new("gantt")
+g <- ganttAddTask(g, "Explore Ideas","2024-01-27","2024-02-03",done=100 )
+g <- ganttAddTask(g, "Finalise Topic","2024-02-02","2024-02-03",done=100 )
+g <- ganttAddTask(g, "Obtain Feedback from Prof and Update","2024-02-03","2024-02-04",done=100 )
+
+g <- ganttAddTask(g, "Setting up Project Github & Netlify","2024-02-03","2024-02-04",done=100 )
+g <- ganttAddTask(g, "Proposal Writeup - Motivation, Problems, Solution","2024-02-03","2024-02-09",done=100 )
+g <- ganttAddTask(g, "Proposal Writeup - Methodology and Analytical Approach","2024-02-03","2024-02-09",done=100 )
+g <- ganttAddTask(g, "Proposal Writeup - R Shiny and Project Management","2024-02-03","2024-02-09",done=100 )
+g <- ganttAddTask(g, "Draft individual submodules","2024-02-03","2024-02-10",done=100 )
+g <- ganttAddTask(g, "Submit Proposal","2024-02-10","2024-02-11",done=100 )
+
+g <- ganttAddTask(g, "Preliminary Data Cleaning","2024-02-12","2024-02-17",done=0 )
+g <- ganttAddTask(g, "Get Proposal Feedback and Update","2024-02-18","2024-02-22",done=0 )
+g <- ganttAddTask(g, "Data Preparation + 1st Prototype","2024-02-23","2024-02-29",done=0 )
+
+g <- ganttAddTask(g, "Refine Prototype","2024-02-29","2024-03-14",done=0 )
+g <- ganttAddTask(g, "Prepare User Guide","2024-03-10","2024-03-15",done=0 )
+g <- ganttAddTask(g, "Finalise Shiny App","2024-03-15","2024-03-24",done=0 )
+g <- ganttAddTask(g, "Poster Preparation","2024-03-25","2024-03-30",done=0 )
+
+plot(g, ylabel=list(font=ifelse(is.na(g[["start"]]), 2, 1)),
+     event.time="2024-02-11", event.label="Report Date",
+     col.event=c("red"),
+     col.done=c("lightblue"),
+     col.notdone=c("pink"),
+     main = "Gantt Chart")
+
+legend("topright", pch=22, pt.cex=2, cex=0.9, pt.bg=c("lightblue", "pink"),
+     border="black",
+     legend=c("Completed", "Not Yet Done"), bg="white", xpd=TRUE)
+```
