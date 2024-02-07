@@ -90,9 +90,11 @@ In the first tab of the first sub-module, we aim to display:
 
 In this section, we utilise the following visualisations:
 
--   **Bar Charts:** These charts illustrate the proportion of responses for each independent variable. Users can easily compare the distribution of responses across different categories, gaining insights into the relative frequency of each response option.
+-   **Stacked Bar Charts:** These charts illustrate the proportion of responses for each independent variable. By stacking the bars, users can visually compare the distribution of responses across different categories within each variable, gaining insights into the relative frequency of each response option while also observing the overall distribution of responses for each variable.
 
 -   **Density plots**: For comparison of the distribution and variability of scores for each categorical values of a variable.
+
+-   **Key Statistics from Confirmatory Data Analysis (e.g., p-values from ANOVA test):** These statistics offer additional insights into the relationships between variables, providing evidence to support or refute hypotheses and conclusions drawn from the data analysis.
 
 Kindly note that for brevity, the names and number of variables in the prototype below are indicative and non-exhaustive :)
 
