@@ -7,24 +7,8 @@
 
 /* Custom callout boxes */
 
-.thunderbox {
-  padding: 1.5em 2.5em 1.5em 6.5em;
-  margin-bottom: 10px;
-  border: 1.5px dotted #c2a873;
-  border-radius: 10px;
-  font-size: 13px;
-  background: #f0e9cc 5px center/3em no-repeat;
-}
 
-.thunder {
-  background-image: url("Images/caution.png");
-  background-position: left;
-  background-position-x: 1rem;
-  background-position-y: 1rem;
-  background-size: auto 75px;  
-}
-
-.brainbox {
+.ideabox {
   padding: 1.5em 2.5em 1.5em 6.5em;
   margin-bottom: 10px;
   border: 1.5px dotted #a8b298;
@@ -32,8 +16,8 @@
   background: #dfedd9 5px center/3em no-repeat;
 }
 
-.brain {
-  background-image: url("Images/insights.png");
+.idea {
+  background-image: url("Images/idea.png");
   background-position: left;
   background-position-x: 1rem;  
   background-position-y: 1rem;
@@ -55,20 +39,4 @@
   background-position-x: 1rem;
   background-position-y: 1rem;
   background-size: auto 70px;
-}
-
-.nursebox {
-  padding: 1.5em 2.5em 1.5em 6.5em;
-  margin-bottom: 10px;
-  border: 1.5px dotted #D7878A;
-  border-radius: 10px;
-  background:  #F4E7E7  5px center/3em no-repeat;
-}
-
-.nurse {
-  background-image: url("Images/help.png");
-  background-position: left;
-  background-position-x: 1rem;
-  background-position-y: 1rem;
-  background-size: auto 62px;
 }

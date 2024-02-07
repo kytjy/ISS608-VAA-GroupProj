@@ -16,13 +16,13 @@ execute:
     code-line-numbers: true
 ---
 
-# Overview & Motivation
+# 1 Overview & Motivation
 
 Singapore has come a long way since gaining independence in 1965. Without natural resources, human capital development through a well-planned, world-class education system was a critical part of Singapore's transformation from third world to first. Despite the internationally lauded success, Singapore's education system is far from perfect -- there still exists gaps in education achievement among students. According to the latest OECD's Programme for International Student Assessment (PISA) 2022, which measures 15-year-olds' ability to use their reading, mathematics, and science knowledge and skills to meet real-life challenges, socio-economic status accounted for 17% of the variation in mathematics performance in Singapore (compared to 15% on average across OECD countries). Clearly, Singapore's success does not translate to success for every student. Why then do some students outperform others?
 
 Our team believes that knowledge is power. While causality cannot and should not be easily drawn between the various forces of influence and academic performance, a more detailed and nuanced understanding of these factors would highlight potential areas to focus on when engaging parents and students as well as developing education and socioeconomic policies for a more inclusive and equitable society.
 
-# Problem Statement
+# 2 Problem Statement
 
 The PISA is treated as a platform for geopolitical competition, as shown by an overemphasis on the comparison of PISA scores between different countries. Scant attention is paid to the extensive data collected through the student, parent, and school questionnaires that are administered alongside the tests, which may reveal more a nuanced understanding of the individual lived experiences of students.
 
@@ -30,7 +30,7 @@ Research studies on the gaps in education attainment in Singapore tends to focus
 
 Technical knowledge is required to perform accurate and reliable data wrangling and analysis of the survey outcomes from PISA. Such valuable information should be made available to the public in an accessible and interactive manner for self-discovery.
 
-# Methodology
+# 3 Methodology
 
 The team will extract, analyse, and visualise the relationships between different factors and the PISA scores of Singapore students. Using various R packages, an interactive R shiny application with visual analytics techniques will be presented to enable users to interact with the data based on their personal interests and circumstances, and draw their own insights and conclusions regarding the state of learning in Singapore.
 
@@ -44,40 +44,115 @@ Users will be able to:
 
 Overall, the research hopes to generate new knowledge on disparities in the daily stress experience and psychological well-being between lower and higher SES students, and their spillover effects on academic performance and persistence. The broader implication of the study is that educational policies must actively address psychological challenges along with resource challenges to better mitigate socioeconomic gaps in higher educational attainment.
 
-# The Data
+# 4 The Data
 
 The PISA Survey measures how well 15-year-old students in different countries perform in the subjects of reading, mathematics, and science. The PISA surveys take place every three years -- the latest one was conducted in 2022, after the COVID-19 pandemic. The PISA 2022 database contains the full set of responses from individual students, school principals, teachers, and parents. This project focuses on the student questionnaire data file, retrieved from the [PISA Database](https://www.oecd.org/pisa/data/2022database/).
 
-# Methodology and Analytical Approach
+# 5 Methodology and Analytical Approach
 
 The project will use a combination of Exploratory Data Analysis (EDA) and Confirmatory Data Analysis (CDA) to assess the relationships between academic outcomes and the myriad of factors.
 
-## Exploratory Data Analysis (EDA) via Data Visualisation
+## 5.1 Exploratory Data Analysis (EDA) via Data Visualisation
 
 For this project, EDA in the form of visualisation techniques will be applied to give the public the ability to obtain evidence-based insights through visual analytics. The availability of a range of psychological, socioeconomic and environmental factors to choose from under the broad categories of individual, family, and school factors provides a multi-faceted view of academic performance.
 
-## Confirmatory Data Analysis (CDA) via Hypothesis Testing and Model Building
+## 5.2 Confirmatory Data Analysis (CDA) via Hypothesis Testing and Model Building
 
 For this project, CDA will be two-pronged. One, users can conduct hypothesis testing for the various factors to determine their statistical significance vis-à-vis the PISA scores. Two, users can build a model based on multiple linear regression (and aided by multicollinearity checks) to obtain an integrated perspective of the interplay between different factors on the PISA scores.
 
-# Data Visualisation Methods
+# 6 Data Visualisation Methods
 
--   Raincloud plots to visualise distribution of individual subject scores (target variables)
+There will be 4 sub-modules to display 4 types of analysis, namely: Univariate Analysis, Confirmatory Data Analysis, Cluster Analysis, and Longitudinal Analysis.
 
--   Ternary plot to visualise the performance across 3 different subjects and the possible interplay with each other • Bar charts with error bars
+## 6.1 Univariate Analysis
 
--   Diverging stacked bar chart for likert data
+Under Univariate Analysis, we aim to present three tabs. Firstly, to display the distribution of the three subject scores. Secondly, to show the proportion of responses for each independent variable and the distribution of scores according to each category within a variable. Lastly, the correlation matrix can enable users to visualise multicollinearity. Additionally, providing descriptive statistics for each variable could enhance understanding of their individual characteristics.
 
--   Parallel coordinates plot to compare relationship between variables
+### 6.1.1 Target Variables
 
--   Correlation matrix
+![](images/p1.PNG){fig-align="center"}
 
--   Streamgraph to analyse performance across time, where the width explains the longevity of explanatory variable and height provides the magnitude of impact to scores.
+In the first tab of the first sub-module, we aim to display:
 
-# R Packages
+-   **Raincloud plots** to visualise the distribution of individual subject scores (target variables). The raincloud plot serves as a comprehensive visualisation tool by combining three essential components: a density plot, boxplot, and dot plot. The density plot illustrates the distribution's shape and density, offering insights into its overall pattern. Meanwhile, the boxplot provides a summary of central tendency, spread, and any outliers present, aiding in the quick identification of key statistical characteristics. Lastly, the dot plot displays individual data points, allowing for a detailed examination of specific values or patterns within the data. Together, these components offer a holistic view of the data distribution, facilitating efficient exploration and interpretation.
+
+-   **Ternary plot** offers a unique perspective by visualising the performance across three different subjects simultaneously. This plot enables users to explore the interplay among the subjects, identifying any correlations or dependencies that may exist between them. By representing data points as proportions of three variables within a triangular coordinate system, the ternary plot provides a concise and intuitive representation of multidimensional relationships, enhancing the understanding of how performance in one subject may relate to or influence performance in the others.
+
+::: {.ideabox .idea data-latex="idea"}
+**Features of this visualisation**
+
+-   **Subject Selection Check Box:** Users can select which subjects to display, allowing for the visualisation of one subject at a time or multiple subjects simultaneously. This flexibility enables users to focus on specific subjects of interest or compare multiple subjects within the same plot.
+
+-   **Year Selection Option:** Users have the option to choose the year of reference for the data displayed. This feature enables temporal analysis, allowing users to track changes or trends in performance over time. By selecting different years, users can explore how performance in the chosen subjects evolves across different time periods, providing valuable insights into longitudinal patterns or shifts.
+:::
+
+### 6.1.2 Independent Variables
+
+In this section, we utilise the following visualisations:
+
+-   **Bar Charts:** These charts illustrate the proportion of responses for each independent variable. Users can easily compare the distribution of responses across different categories, gaining insights into the relative frequency of each response option.
+
+-   **Density plots**: For comparison of the distribution and variability of scores for each categorical values of a variable.
+
+Kindly note that for brevity, the names and number of variables in the prototype below are indicative and non-exhaustive :)
+
+
+![](images/p2.PNG){fig-align="center"}
+
+::: {.ideabox .idea data-latex="idea"}
+**Features of this visualisation**
+
+-   **Subject Selection Check Box:** Users can choose which subjects to display, either individually or simultaneously, using checkboxes.
+
+-   **Variable Selection Option:** Users have the ability to select variable(s) from the three categories. This feature allows users to focus on specific variables and explore their relationships with subject scores, facilitating targeted analysis and interpretation.
+:::
+
+### 6.1.3 Correlation Matrix
+
+The correlation matrix provides insights into multicollinearity and correlation coefficients. This matrix displays the pairwise correlations between variables, revealing the strength and direction of relationships between them. By visualising the correlation coefficients, users can identify potential multicollinearity issues, where independent variables are highly correlated with each other. This information is crucial for regression analysis, as multicollinearity can distort coefficient estimates and reduce model accuracy.
+
+![](images/p3.PNG){fig-align="center"}
+
+::: {.ideabox .idea data-latex="idea"}
+**Features of this visualisation**
+
+-   **Variable Selection Option:** Users can choose the number and types of variables to test for multicollinearity. This flexibility allows users to customize the analysis based on their specific research questions or analytical needs.
+
+-   **Correlation Coefficient Display:** The correlation coefficient is displayed in each tile of the correlation matrix, which indicates the strength and direction of the relationship between pairs of variables, providing users with valuable insights into the degree of multicollinearity present in the data.
+:::
+
+## 6.2 Confirmatory Data Analysis
+
+::: {.ideabox .idea data-latex="idea"}
+**Features of this visualisation**
+:::
+
+## 6.3 Cluster Analysis
+
+::: {.ideabox .idea data-latex="idea"}
+**Features of this visualisation**
+:::
+
+## 6.4 Longitudinal Analysis
+
+-   **Line Graph:** This graph illustrates the trend of change in subject scores over periods of time. By plotting scores against time, users can visualise how performance in each subject evolves over the specified time frame. This visualisation facilitates the identification of trends, patterns, and fluctuations in scores over time, enabling insights into long-term progress or changes in performance.
+
+-   **Bar Plot:** The bar plot displays year-on-year changes to visualise the magnitude of change across time. By comparing scores between consecutive years, users can discern the direction and magnitude of changes in performance. This visualisation helps identify significant shifts or trends in subject scores from one year to the next, providing insights into the pace and direction of change over time.
+
+![](images/p4.PNG){fig-align="center"}
+
+::: {.ideabox .idea data-latex="idea"}
+**Features of this visualisation**
+
+-   **Subject Selection Option:** Users can choose one or multiple subjects for comparison across time. This functionality allows users to focus on specific subjects of interest and explore their trends over the selected time period.
+
+-   **Time Period Selection:** Users have the ability to select the time period they would like to visualise. This feature enables users to customize the analysis based on their specific research questions or analytical needs, allowing for exploration of trends and changes over the desired timeframe.
+:::
+
+# 7 R Packages
 
 | Package                                                                                                                                                              | Description                                                                                                                                         |
-|-------------|-----------------------------------------------------------|
+|--------------------|----------------------------------------------------|
 | [tidyverse](https://www.tidyverse.org/)                                                                                                                              | For data manipulation                                                                                                                               |
 | [DT](https://rstudio.github.io/DT/)                                                                                                                                  | For interactive data tables                                                                                                                         |
 | [ggstatplot](https://indrajeetpatil.github.io/ggstatsplot/)                                                                                                          | To visual correlation matrix and plots with statistical tests                                                                                       |
@@ -88,13 +163,14 @@ For this project, CDA will be two-pronged. One, users can conduct hypothesis tes
 | [ggdist](https://mjskay.github.io/ggdist/)                                                                                                                           | For visualisations of distributions and uncertainty.                                                                                                |
 | [ggtext](https://wilkelab.org/ggtext/)                                                                                                                               | Supports improved text rendering for ggplot2.                                                                                                       |
 | [ggridges](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.htmlhttps://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) | For ridgeline plots that create the impression of a mountain range. They can be useful for visualising changes in distributions over time or space. |
-: {tbl-colwidths="[15,85]"}
 
-# Project Management
+: {tbl-colwidths="\[15,85\]"}
+
+# 8 Project Management
 
 Clear definitions of the project's objectives, knowledge of its limitations, identification of its risks, team member management, appropriate resource allocation to guarantee that tasks assigned can be completed, appropriate documentation, and regular updates on the project's status are all necessary components of good project management. In this project, we employ the use of a Gantt Chart track the timeline and tasks.
 
-Here is an overview of our project timeline:  
+Here is an overview of our project timeline:
 
 ```{r}
 #| echo: false
