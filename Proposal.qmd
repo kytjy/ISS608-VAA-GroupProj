@@ -138,8 +138,6 @@ Under the Multiple Linear Regression Model sub-module, the variables can be asse
 
 Under the Cluster Analysis sub-module, users will be able to conduct cluster analysis using either hierarchical or k-means clustering approaches. Users may build two cluster models and compare them against each other based on a variety of validation criteria (e.g., Hubert's gamme coefficient, Dunn index, corrected rand index).
 
-![](images/p5.PNG){fig-align="center"}
-
 ::: {.ideabox .idea data-latex="idea"}
 **Features of this visualisation**
 
@@ -181,7 +179,6 @@ Under the Longitudinal Analysis sub-module, the following graphs would be shown:
 | [ggtext](https://wilkelab.org/ggtext/)                                                                                                                | Supports improved text rendering for ggplot2.                                                                                                       |
 | [ggridges](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html)                                                              | For ridgeline plots that create the impression of a mountain range. They can be useful for visualising changes in distributions over time or space. |
 | [ggiraph](https://davidgohel.github.io/ggiraph/) and [ggiraphExtra](https://cran.r-project.org/web/packages/ggiraphExtra/vignettes/introduction.html) | For dynamic, interactive ggplot2 graphs.                                                                                                            |
-| [heatmaply](http://talgalili.github.io/heatmaply/)                                                                                                    | For building interactive cluster heatmap.                                                                                                           |
 
 : {tbl-colwidths="\[15,85\]"}
 
