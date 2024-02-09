@@ -22,7 +22,7 @@ website:
             href: "shinyapp/shinyapp1.html"
           - text: Shiny App
             href: "shinyapp/shinyapp2.html"
-      - text: "Project Overview"
+      - text: "Project Poster"
         href:  "poster/poster.html"            
   
 format:
