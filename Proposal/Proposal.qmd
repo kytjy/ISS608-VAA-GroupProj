@@ -18,9 +18,9 @@ execute:
 
 # 1 Overview & Motivation
 
-Singapore has come a long way since gaining independence in 1965. Without natural resources, human capital development through a well-planned, world-class education system was a critical part of Singapore's transformation from third world to first. Despite the internationally lauded success, Singapore's education system is far from perfect -- there still exists gaps in education achievement among students. According to the latest OECD's Programme for International Student Assessment (PISA) 2022, which measures 15-year-olds' ability to use their reading, mathematics, and science knowledge and skills to meet real-life challenges, socio-economic status accounted for 17% of the variation in mathematics performance in Singapore (compared to 15% on average across OECD countries). Clearly, Singapore's success does not translate to success for every student. Why then do some students outperform others?
+Singapore has come a long way since gaining independence in 1965. Without natural resources, human capital development through a well-planned, world-class education system was a critical part of Singapore's transformation from third world to first. Despite the internationally lauded success, Singapore's education system is far from perfect -- there still exists gaps in education achievement among students. According to the latest OECD's Programme for International Student Assessment (PISA) 2022, which measures 15-year-olds' ability to use their reading, mathematics, and science knowledge and skills to meet real-life challenges, socioeconomic status accounted for 17% of the variation in mathematics performance in Singapore (compared to 15% on average across OECD countries). Clearly, Singapore's success does not translate to success for every student. Why then do some students outperform others? And is socioeconomic status the only factor for success?
 
-Our team believes that knowledge is power. While causality cannot and should not be easily drawn between the various forces of influence and academic performance, a more detailed and nuanced understanding of these factors would highlight potential areas to focus on when engaging parents and students as well as developing education and socioeconomic policies for a more inclusive and equitable society.
+Our team believes that knowledge is power. While causality cannot and should not be easily drawn between the various forces of influence and academic performance, a more detailed and nuanced understanding of these factors would highlight potential areas to focus on when engaging parents and students as well as when developing education and socioeconomic policies for a more inclusive and equitable society.
 
 # 2 Problem Statement
 
@@ -36,13 +36,13 @@ The team will extract, analyse, and visualise the relationships between differen
 
 Users will be able to:
 
--   Compare the PISA scores between different groups of students based on factors such as gender, socioeconomic status (e.g., employment status of parents, immigrant status), and psychological wellbeing (e.g., feeling of loneliness, resilience when faced with challenges).
+-   Compare the PISA scores between different groups of students based on factors such as gender, socioeconomic status (e.g., employment status of parents, immigrant status), and psychological well-being (e.g., feeling of loneliness, resilience when faced with challenges).
 
--   Conduct longitudinal comparisons of PISA scores across different years.
+-   Conduct longitudinal comparisons of PISA scores of Singapore students across different years.
 
 -   Gain an understanding of the varying levels of importance and statistical significance of the various influences on PISA scores for different clusters of students.
 
-Overall, the research hopes to generate new knowledge on disparities in the daily stress experience and psychological well-being between lower and higher SES students, and their spillover effects on academic performance and persistence. The broader implication of the study is that educational policies must actively address psychological challenges along with resource challenges to better mitigate socioeconomic gaps in higher educational attainment.
+Overall, the research hopes to generate new knowledge on disparities in the everyday stress experience and psychological well-being between lower and higher SES students, and their spillover effects on academic performance and persistence. The broader implication of the study is that educational policies must actively address psychological challenges alongside resource challenges to better mitigate socioeconomic gaps in educational attainment.
 
 # 4 The Data
 
@@ -50,23 +50,23 @@ The PISA Survey measures how well 15-year-old students in different countries pe
 
 # 5 Methodology and Analytical Approach
 
-The project will use a combination of Exploratory Data Analysis (EDA) and Confirmatory Data Analysis (CDA) to assess the relationships between academic outcomes and the myriad of factors.
+The project will use a combination of Exploratory Data Analysis (EDA) and Confirmatory Data Analysis (CDA) to assess the relationships between academic outcomes and a myriad of factors.
 
-## 5.1 Exploratory Data Analysis (EDA) via Data Visualisation
+## 5.1 Exploratory Data Analysis (EDA)
 
-For this project, EDA in the form of visualisation techniques will be applied to give the public the ability to obtain evidence-based insights through visual analytics. The availability of a range of psychological, socioeconomic and environmental factors to choose from under the broad categories of individual, family, and school factors provides a multi-faceted view of academic performance.
+For this project, EDA in the form of visualisation techniques will be applied to give users the ability to obtain evidence-based insights through visual analytics. The availability of a range of psychological, socioeconomic, and environmental factors to choose from under the broad categories of individual, family, and school factors provides a multi-faceted view of academic performance. The inclusion of PISA scores from previous years would allow users to undertake longitudinal analysis of the scores vis-à-vis these various factors.
 
-## 5.2 Confirmatory Data Analysis (CDA) via Hypothesis Testing and Model Building
+## 5.2 Confirmatory Data Analysis (CDA)
 
-For this project, CDA will be two-pronged. One, users can conduct hypothesis testing for the various factors to determine their statistical significance vis-à-vis the PISA scores. Two, users can build a model based on multiple linear regression (and aided by multicollinearity checks) to obtain an integrated perspective of the interplay between different factors on the PISA scores.
+For this project, CDA will be three-pronged. One, users can conduct hypothesis testing for the various factors to determine their statistical significance vis-à-vis the PISA scores. Two, users can build a model based on multiple linear regression (and aided by multicollinearity checks) to obtain an integrated perspective of the interplay between different factors on the PISA scores. Three, users can conduct cluster analysis to identify different groups of students based on their scores and related factors.
 
 # 6 Data Visualisation Methods
 
-There will be 4 sub-modules to display 4 types of analysis, namely: Univariate Analysis, Confirmatory Data Analysis, Cluster Analysis, and Longitudinal Analysis.
+There will be 4 sub-modules to display 4 types of analysis, namely: Variable Analysis, Multiple Linear Regression Model, Cluster Analysis, and Longitudinal Analysis.
 
-## 6.1 Univariate Analysis
+## 6.1 Variable Analysis
 
-Under Univariate Analysis, we aim to present three tabs. Firstly, to display the distribution of the three subject scores. Secondly, to show the proportion of responses for each independent variable and the distribution of scores according to each category within a variable. Lastly, the correlation matrix can enable users to visualise multicollinearity. Additionally, providing descriptive statistics for each variable could enhance understanding of their individual characteristics.
+Under Variable Analysis sub-module, we aim to present three tabs. Firstly, to display the distribution of the three subject scores. Secondly, to show the proportion of responses for each independent variable and the distribution of scores according to each category within a variable. Lastly, the correlation matrix would enable users to visualise multicollinearity. Additionally, providing descriptive statistics for each variable could enhance understanding of their individual characteristics.
 
 ### 6.1.1 Target Variables
 
@@ -76,7 +76,7 @@ In the first tab of the first sub-module, we aim to display:
 
 -   **Raincloud plots** to visualise the distribution of individual subject scores (target variables). The raincloud plot serves as a comprehensive visualisation tool by combining three essential components: a density plot, boxplot, and dot plot. The density plot illustrates the distribution's shape and density, offering insights into its overall pattern. Meanwhile, the boxplot provides a summary of central tendency, spread, and any outliers present, aiding in the quick identification of key statistical characteristics. Lastly, the dot plot displays individual data points, allowing for a detailed examination of specific values or patterns within the data. Together, these components offer a holistic view of the data distribution, facilitating efficient exploration and interpretation.
 
--   **Ternary plot** offers a unique perspective by visualising the performance across three different subjects simultaneously. This plot enables users to explore the interplay among the subjects, identifying any correlations or dependencies that may exist between them. By representing data points as proportions of three variables within a triangular coordinate system, the ternary plot provides a concise and intuitive representation of multidimensional relationships, enhancing the understanding of how performance in one subject may relate to or influence performance in the others.
+-   **Ternary plot** offers a unique perspective by visualising the performance across three different subjects simultaneously for each student. This plot enables users to explore the interplay among the subjects, identifying any correlations or dependencies that may exist between them. By representing data points as proportions of three variables within a triangular coordinate system, the ternary plot provides a concise and intuitive representation of multidimensional relationships, enhancing the understanding of how performance in one subject may relate to or influence performance in the others.
 
 ::: {.ideabox .idea data-latex="idea"}
 **Features of this visualisation**
@@ -92,12 +92,11 @@ In this section, we utilise the following visualisations:
 
 -   **Stacked Bar Charts:** These charts illustrate the proportion of responses for each independent variable. By stacking the bars, users can visually compare the distribution of responses across different categories within each variable, gaining insights into the relative frequency of each response option while also observing the overall distribution of responses for each variable.
 
--   **Density plots**: For comparison of the distribution and variability of scores for each categorical values of a variable.
+-   **Density Plots**: For comparison of the distribution and variability of scores for each categorical values of a variable.
 
--   **Key Statistics from Confirmatory Data Analysis (e.g., p-values from ANOVA test):** These statistics offer additional insights into the relationships between variables, providing evidence to support or refute hypotheses and conclusions drawn from the data analysis.
+-   **Key Statistics from Confirmatory Data Analysis (e.g., p-values from ANOVA test):** These statistics offer additional insights into the relationships between variables and subject scores, providing evidence to support or refute hypotheses and conclusions drawn from the data analysis.
 
-Kindly note that for brevity, the names and number of variables in the prototype below are indicative and non-exhaustive :)
-
+Kindly note that for brevity, the names and number of variables in the prototype below are indicative and non-exhaustive. :)
 
 ![](images/p2.PNG){fig-align="center"}
 
@@ -123,19 +122,33 @@ The correlation matrix provides insights into multicollinearity and correlation 
 -   **Correlation Coefficient Display:** The correlation coefficient is displayed in each tile of the correlation matrix, which indicates the strength and direction of the relationship between pairs of variables, providing users with valuable insights into the degree of multicollinearity present in the data.
 :::
 
-## 6.2 Confirmatory Data Analysis
+## 6.2 Multiple Linear Regression Model
+
+Under the Multiple Linear Regression Model sub-module, the variables can be assembled to assess their correlation to subject scores. Users may choose their own variables or employ stepwise selection (forward, backward, or both). The coefficients associated with each included variable, and various model assessment indicators (e.g., adjusted R-squared value, p-value, residual standard error value) would also be displayed. Users may build two models and compare them against each other.
 
 ::: {.ideabox .idea data-latex="idea"}
 **Features of this visualisation**
+
+-   **Manual or Auto Variable Selection:** Users can choose the variables they believe would produce a multiple linear regression model with a good fit (based on their assumptions/impressions of factors that are highly related to scores), or they can choose a stepwise selection approach that is based on the Akaike information criterion (AIC).
+
+-   **Model Comparison:** Users may build two different models and compare them with each other. This allows users to choose a model that performs better.
 :::
 
 ## 6.3 Cluster Analysis
 
+Under the Cluster Analysis sub-module, users will be able to conduct cluster analysis using either hierarchical or k-means clustering approaches. Users may build two cluster models and compare them against each other based on a variety of validation criteria (e.g., Hubert's gamme coefficient, Dunn index, corrected rand index).
+
 ::: {.ideabox .idea data-latex="idea"}
 **Features of this visualisation**
+
+-   **Model Comparison:** Users may build two different cluster models and compare them with each other. This allows users to choose a model that performs better.
+
+-   **Selection of Number of Clusters:** Users will select the number of clusters for the k-means clustering approach.
 :::
 
 ## 6.4 Longitudinal Analysis
+
+Under the Longitudinal Analysis sub-module, the following graphs would be shown:
 
 -   **Line Graph:** This graph illustrates the trend of change in subject scores over periods of time. By plotting scores against time, users can visualise how performance in each subject evolves over the specified time frame. This visualisation facilitates the identification of trends, patterns, and fluctuations in scores over time, enabling insights into long-term progress or changes in performance.
 
@@ -153,24 +166,25 @@ The correlation matrix provides insights into multicollinearity and correlation 
 
 # 7 R Packages
 
-| Package                                                                                                                                                              | Description                                                                                                                                         |
-|--------------------|----------------------------------------------------|
-| [tidyverse](https://www.tidyverse.org/)                                                                                                                              | For data manipulation                                                                                                                               |
-| [DT](https://rstudio.github.io/DT/)                                                                                                                                  | For interactive data tables                                                                                                                         |
-| [ggstatplot](https://indrajeetpatil.github.io/ggstatsplot/)                                                                                                          | To visual correlation matrix and plots with statistical tests                                                                                       |
-| [plotly](https://plotly.com/r/)                                                                                                                                      | For interactive, publication-quality plots                                                                                                          |
-| [corrplot](https://www.rdocumentation.org/packages/corrplot/versions/0.92/topics/corrplot)                                                                           | For graphical display of correlation matrix.                                                                                                        |
-| [patchwork](https://patchwork.data-imaginist.com/)                                                                                                                   | For preparing composite figure created using ggplot2.                                                                                               |
-| [scales](https://scales.r-lib.org/)                                                                                                                                  | For data labels and annotations for ggplot2                                                                                                         |
-| [ggdist](https://mjskay.github.io/ggdist/)                                                                                                                           | For visualisations of distributions and uncertainty.                                                                                                |
-| [ggtext](https://wilkelab.org/ggtext/)                                                                                                                               | Supports improved text rendering for ggplot2.                                                                                                       |
-| [ggridges](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.htmlhttps://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) | For ridgeline plots that create the impression of a mountain range. They can be useful for visualising changes in distributions over time or space. |
+| Package                                                                                                                                               | Description                                                                                                                                         |
+|--------------------------------------|----------------------------------|
+| [tidyverse](https://www.tidyverse.org/)                                                                                                               | For data manipulation                                                                                                                               |
+| [DT](https://rstudio.github.io/DT/)                                                                                                                   | For interactive data tables                                                                                                                         |
+| [ggstatplot](https://indrajeetpatil.github.io/ggstatsplot/)                                                                                           | To visual correlation matrix and plots with statistical tests                                                                                       |
+| [plotly](https://plotly.com/r/)                                                                                                                       | For interactive, publication-quality plots                                                                                                          |
+| [corrplot](https://www.rdocumentation.org/packages/corrplot/versions/0.92/topics/corrplot)                                                            | For graphical display of correlation matrix.                                                                                                        |
+| [patchwork](https://patchwork.data-imaginist.com/)                                                                                                    | For preparing composite figure created using ggplot2.                                                                                               |
+| [scales](https://scales.r-lib.org/)                                                                                                                   | For data labels and annotations for ggplot2                                                                                                         |
+| [ggdist](https://mjskay.github.io/ggdist/)                                                                                                            | For visualisations of distributions and uncertainty.                                                                                                |
+| [ggtext](https://wilkelab.org/ggtext/)                                                                                                                | Supports improved text rendering for ggplot2.                                                                                                       |
+| [ggridges](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html)                                                              | For ridgeline plots that create the impression of a mountain range. They can be useful for visualising changes in distributions over time or space. |
+| [ggiraph](https://davidgohel.github.io/ggiraph/) and [ggiraphExtra](https://cran.r-project.org/web/packages/ggiraphExtra/vignettes/introduction.html) | For dynamic, interactive ggplot2 graphs.                                                                                                            |
 
 : {tbl-colwidths="\[15,85\]"}
 
 # 8 Project Management
 
-Clear definitions of the project's objectives, knowledge of its limitations, identification of its risks, team member management, appropriate resource allocation to guarantee that tasks assigned can be completed, appropriate documentation, and regular updates on the project's status are all necessary components of good project management. In this project, we employ the use of a Gantt Chart track the timeline and tasks.
+Clear definitions of the project's objectives, knowledge of its limitations, identification of its risks, team member management, appropriate resource allocation to guarantee that tasks assigned can be completed, appropriate documentation, and regular updates on the project's status are all necessary components of good project management. In this project, we employ the use of a Gantt Chart to track the timeline and tasks.
 
 Here is an overview of our project timeline:
 
