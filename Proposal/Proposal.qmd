@@ -98,7 +98,6 @@ In this section, we utilise the following visualisations:
 
 Kindly note that for brevity, the names and number of variables in the prototype below are indicative and non-exhaustive :)
 
-
 ![](images/p2.PNG){fig-align="center"}
 
 ::: {.ideabox .idea data-latex="idea"}
@@ -123,19 +122,15 @@ The correlation matrix provides insights into multicollinearity and correlation 
 -   **Correlation Coefficient Display:** The correlation coefficient is displayed in each tile of the correlation matrix, which indicates the strength and direction of the relationship between pairs of variables, providing users with valuable insights into the degree of multicollinearity present in the data.
 :::
 
-## 6.2 Confirmatory Data Analysis
+## 6.2 Cluster Analysis
+
+![](images/p5.PNG){fig-align="center"}
 
 ::: {.ideabox .idea data-latex="idea"}
 **Features of this visualisation**
 :::
 
-## 6.3 Cluster Analysis
-
-::: {.ideabox .idea data-latex="idea"}
-**Features of this visualisation**
-:::
-
-## 6.4 Longitudinal Analysis
+## 6.3 Longitudinal Analysis
 
 -   **Line Graph:** This graph illustrates the trend of change in subject scores over periods of time. By plotting scores against time, users can visualise how performance in each subject evolves over the specified time frame. This visualisation facilitates the identification of trends, patterns, and fluctuations in scores over time, enabling insights into long-term progress or changes in performance.
 
@@ -154,7 +149,7 @@ The correlation matrix provides insights into multicollinearity and correlation 
 # 7 R Packages
 
 | Package                                                                                                                                                              | Description                                                                                                                                         |
-|--------------------|----------------------------------------------------|
+|---------------------|---------------------------------------------------|
 | [tidyverse](https://www.tidyverse.org/)                                                                                                                              | For data manipulation                                                                                                                               |
 | [DT](https://rstudio.github.io/DT/)                                                                                                                                  | For interactive data tables                                                                                                                         |
 | [ggstatplot](https://indrajeetpatil.github.io/ggstatsplot/)                                                                                                          | To visual correlation matrix and plots with statistical tests                                                                                       |
@@ -165,6 +160,7 @@ The correlation matrix provides insights into multicollinearity and correlation 
 | [ggdist](https://mjskay.github.io/ggdist/)                                                                                                                           | For visualisations of distributions and uncertainty.                                                                                                |
 | [ggtext](https://wilkelab.org/ggtext/)                                                                                                                               | Supports improved text rendering for ggplot2.                                                                                                       |
 | [ggridges](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.htmlhttps://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) | For ridgeline plots that create the impression of a mountain range. They can be useful for visualising changes in distributions over time or space. |
+| [heatmaply](http://talgalili.github.io/heatmaply/)                                                                                                                   | For building interactive cluster heatmap.                                                                                                           |
 
 : {tbl-colwidths="\[15,85\]"}
 
