@@ -19,9 +19,9 @@ website:
       - text: "Shiny App"
         menu: 
           - text: User Guide
-            href: "shinyapp/shinyapp1.html"
+            href: "shinyapp/userguide.html"
           - text: Shiny App
-            href: "shinyapp/shinyapp2.html"
+            href: "shinyapp/shinyapp.html"
       - text: "Project Poster"
         href:  "poster/poster.html"            
   
