@@ -62,7 +62,7 @@ For this project, CDA will be three-pronged. One, users can conduct hypothesis t
 
 # 6 Data Visualisation Methods
 
-There will be 4 sub-modules to display 4 types of analysis, namely: Univariate and Bivairate Analysis, Multivariate Analysis, Cluster Analysis, and Longitudinal Analysis.
+There will be 4 sub-modules to display 4 types of analysis, namely: Univariate and Bivariate Analysis, Multivariate Analysis, Cluster Analysis, and Longitudinal Analysis.
 
 ## 6.1 Univariate & Bivariate Analysis
 
@@ -96,7 +96,7 @@ In this section, we utilise the following visualisations:
 
 -   **Key Statistics from Confirmatory Data Analysis (e.g., p-values from ANOVA test):** These statistics offer additional insights into the relationships between variables and subject scores, providing evidence to support or refute hypotheses and conclusions drawn from the data analysis.
 
-Kindly note that for brevity, the names and number of variables in the prototype below are indicative and non-exhaustive. :)
+Kindly note that for brevity, the names and number of variables in the prototypes are indicative and non-exhaustive. :)
 
 ![](images/p2.PNG){fig-align="center"}
 
@@ -171,7 +171,7 @@ Under the Longitudinal Analysis sub-module, the following graphs would be shown:
 
 # 7 R Packages
 
-The R packages we will be using includes:
+The R packages we will be using for the project include:
 
 | Package                                                                                                                                               | Description                                                                                                                                         |
 |--------------------------------------|----------------------------------|
