@@ -235,7 +235,7 @@ plot(g, ylabel=list(font=ifelse(is.na(g[["start"]]), 2, 1)),
      col.event=c("red"),
      col.done=c("lightblue"),
      col.notdone=c("pink"),
-     main = "Gantt Chart")
+     main = "Our Exciting Plans!")
 
 legend("topright", pch=22, pt.cex=2, cex=0.9, pt.bg=c("lightblue", "pink"),
      border="black",
