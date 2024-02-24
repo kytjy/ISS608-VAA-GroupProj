@@ -16,6 +16,12 @@ website:
         href: about.qmd
       - text: "Proposal"
         href: "proposal/proposal.html"
+      - text: "Discovery"
+        menu: 
+          - text: Data Wrangling
+            href: "phase1/datawrangling.html"
+          - text: Prototype
+            href: "phase1/prototype.html"        
       - text: "Shiny App"
         menu: 
           - text: User Guide

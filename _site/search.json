@@ -47,5 +47,40 @@
     "title": "The Alchemy of Academics: Investigating the forces influencing academic performance in Singapore",
     "section": "6.4 Longitudinal Analysis",
     "text": "6.4 Longitudinal Analysis\nUnder the Longitudinal Analysis sub-module, the following graphs would be shown:\n\nLine Graph: This graph illustrates the trend of change in subject scores over periods of time. By plotting scores against time, users can visualise how performance in each subject evolves over the specified time frame. This visualisation facilitates the identification of trends and fluctuations in scores over time.\nBar Plot: The bar plot displays year-on-year changes to visualise the magnitude of change across time. By comparing scores between consecutive years, users can discern the direction and magnitude of changes in performance. This visualisation helps identify significant shifts or trends in subject scores from one year to the next, providing insights into the pace and direction of change over time.\n\n\n\n\n\n\n\nFeatures of this visualisation\n\nSubject Selection Option: Users can choose one or multiple subjects for comparison across time. This functionality allows users to focus on specific subjects of interest and explore their trends over the selected time period.\nTime Period Selection: Users have the ability to select the time period they would like to visualise. This feature enables users to customize the analysis based on their specific research questions or analytical needs, allowing for exploration of trends and changes over the desired timeframe."
+  },
+  {
+    "objectID": "Phase1/datawrangling.html",
+    "href": "Phase1/datawrangling.html",
+    "title": "Phase 1: Data Wrangling",
+    "section": "",
+    "text": "The PISA Data from 2000 to 2022 is available on the OECD website."
+  },
+  {
+    "objectID": "Phase1/datawrangling.html#importing-sas-file",
+    "href": "Phase1/datawrangling.html#importing-sas-file",
+    "title": "Phase 1: Data Wrangling",
+    "section": "Importing sas file",
+    "text": "Importing sas file\nFrom PISA 2015 and its later cycles, SAS data sets (.sas) are available with all countries in the file for each repsondent type.\nThe code chunk below imports the 2015, 2018, 2022 Student Questionnaire dataset downloaded from OECD’s PISA Database using the following functions:\n\nlist.files() to identify all SAS files in the data directory and stores their paths in filename variable\nfor (i in 1:length(filenames)) iterates over each file identified, and:\n\nread_sas() function of the haven package to import each file into the R environment,\nsub() to extract parts of the file name,\nassign assigns extracted partial file name to the data read\n\n\n\n# List of all SAS files in directory\nfilenames &lt;- list.files(path = \"data/\",\n                        pattern = \"*.sas7bdat\",\n                        full.names = T)\n\nfor (i in 1:length(filenames))\n{\n  name &lt;- sub(\"^.*?/(.*?)(\\\\.sas7bdat)$\", \"\\\\1\", filenames[i])\n  data &lt;- read_sas(filenames[i])\n  assign (name, data)\n}"
+  },
+  {
+    "objectID": "Phase1/datawrangling.html#importing-txt-file-with-dictionary",
+    "href": "Phase1/datawrangling.html#importing-txt-file-with-dictionary",
+    "title": "Phase 1: Data Wrangling",
+    "section": "Importing txt file with dictionary",
+    "text": "Importing txt file with dictionary\nPISA 2012 and its earlier cycles’ data are provided in 2 forms – a fixed width (or ASCII) text format (.txt), and the corresponding SAS import control syntax file (.sas) for reading the data.\n\n# Loading the dictionary\ndict_student_2012 = SAScii::parse.SAScii(sas_ri = 'data/PISA2012_SAS_student.sas')\n\n# Creating the positions to read_fwf\nstu_qqq_2012 &lt;- read_fwf(file = 'data/stu_qqq_2012.txt', col_positions = fwf_widths(dict_student_2012$width), progress = T)\n\n# Assigns column headers using dictionary\ncolnames(stu_qqq_2012) &lt;- dict_student_2012$varname\n\nEach dataset is a tibble dataframe, containing observations (rows) across variables (columns). Each observation corresponds to an entry from a student who participated in the PISA survey for students in the respective years, and the variables correspond to information from students on various aspects of their home, family, and school background."
+  },
+  {
+    "objectID": "Phase1/datawrangling.html#filtering-for-required-dataset",
+    "href": "Phase1/datawrangling.html#filtering-for-required-dataset",
+    "title": "Phase 1: Data Wrangling",
+    "section": "Filtering for required dataset",
+    "text": "Filtering for required dataset\nCNT refers to the country of response, we can use this to filter for Singapore (where CNT = SGP) responses for our analysis. filter() of the dplyr package allows us to perform this extraction of participating country.\n\n# Filter each dataset for CNT = \"SGP\"\n\nstu_qqq_2012_SG &lt;- stu_qqq_2012 %&gt;% \n  filter(CNT == \"SGP\")\n\nstu_qqq_2015_SG &lt;- stu_qqq_2015 %&gt;% \n  filter(CNT == \"SGP\")\n\nstu_qqq_2018_SG &lt;- stu_qqq_2018 %&gt;% \n  filter(CNT == \"SGP\")\n\nstu_qqq_2022_SG &lt;- stu_qqq_2022 %&gt;% \n  filter(CNT == \"SGP\")\n\nThe function below will extract required columns for longitudinal analysis of the three main subject scores for each year. The expected argument is:\n\nobject: name of object which the survey is stored in\ncolnames: names of columns with partial string match\nyear: year which the observations were related to\n\n\n# Filter each dataset for CNT = \"SG\"\nlong &lt;- function(object, colnames, year) {\n  result &lt;- object %&gt;% \n    filter(CNT == \"SGP\") %&gt;% \n    select(grep(colnames)) %&gt;% \n    mutate(year = str_sub(object, 9, 12))\n}\n\nThe .rds file format is usually smaller than its SAS file counterpart and will therefore take up less storage space. The .rds file will also preserve data types and classes such as factors and dates eliminating the need to redefine data types after loading the file. For fast and space efficient data storage, files can be exported as RDS and re-imported into R using write_rds() and read_rds() respectively.\n\nwrite_rds(stu_qqq_2022_SG, \"data/stu_qqq_2022_SG.rds\")\n\n\n#stu_SG &lt;- read_rds(\"data/stu_SG.rds\")"
+  },
+  {
+    "objectID": "Phase1/datawrangling.html#duplicates-check",
+    "href": "Phase1/datawrangling.html#duplicates-check",
+    "title": "Phase 1: Data Wrangling",
+    "section": "Duplicates Check",
+    "text": "Duplicates Check\nBefore moving on to the next step, let us check for duplicated records to prevent double counting of our results with the help of group_by_all() to detect if there are more than one instance of a row with the same details throughout all the columns.\n\n#duplicate &lt;- stu_SG %&gt;% \n#  group_by_all() %&gt;% \n#  filter(n()&gt;1) %&gt;% \n#  ungroup()\n  \n#duplicate"
   }
 ]

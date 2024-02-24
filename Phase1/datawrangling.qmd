@@ -1,0 +1,170 @@
+---
+title: "Phase 1: Data Wrangling"
+title-block-banner: true
+toc: true
+editor: visual
+execute: 
+  freeze: auto
+  warning: false
+  #echo: false
+  #message: false
+  html:
+    code-fold: True
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+# PISA Data
+
+The PISA Data from 2000 to 2022 is available on the [OECD website](https://www.oecd.org/pisa/data/).
+
+# Getting Started
+
+| **Library**                                 | **Description**                                                                                               |
+|---------------------|---------------------------------------------------|
+| [**tidyverse**](https://www.tidyverse.org/) | A collection of core packages designed for data science, used extensively for data preparation and wrangling. |
+| [**haven**](https://haven.tidyverse.org/)   | To enable R to read and write various data formats such as SAS and SPSS.                                      |
+| [**knitr**](https://yihui.org/knitr/)       | For dynamic report generation.                                                                                |
+
+: {tbl-colwidths="\[20,80\]"}
+
+The following code chunk uses `p_load()` of [**pacman**](https://rpubs.com/akshaypatankar/594834) package to check if tidyverse packages are installed in the computer. If they are, the libraries will be called into R.
+
+```{r}
+pacman::p_load(tidyverse, haven, knitr, gt)
+```
+
+# Reading Data into R
+
+The next two sections cover the steps taken to read in the raw data.
+
+## Importing sas file
+
+From PISA 2015 and its later cycles, SAS data sets (`.sas`) are available with all countries in the file for each repsondent type.
+
+The code chunk below imports the *2015, 2018, 2022 Student Questionnaire* dataset downloaded from OECD's PISA Database using the following functions:
+
+-   `list.files()` to identify all SAS files in the data directory and stores their paths in *filename* variable
+
+-   `for (i in 1:length(filenames))` iterates over each file identified, and:
+
+    -   `read_sas()` function of the [**haven**](https://haven.tidyverse.org/) package to import each file into the R environment,
+
+    -   `sub()` to extract parts of the file name,
+
+    -   `assign` assigns extracted partial file name to the data read
+
+```{r}
+#| eval: false
+
+# List of all SAS files in directory
+filenames <- list.files(path = "data/",
+                        pattern = "*.sas7bdat",
+                        full.names = T)
+
+for (i in 1:length(filenames))
+{
+  name <- sub("^.*?/(.*?)(\\.sas7bdat)$", "\\1", filenames[i])
+  data <- read_sas(filenames[i])
+  assign (name, data)
+}
+```
+
+## Importing txt file with dictionary
+
+PISA 2012 and its earlier cycles' data are provided in 2 forms -- a fixed width (or ASCII) text format (`.txt`), and the corresponding SAS import control syntax file (`.sas`) for reading the data.
+
+```{r}
+#| eval: false
+
+# Loading the dictionary
+dict_student_2012 = SAScii::parse.SAScii(sas_ri = 'data/PISA2012_SAS_student.sas')
+
+# Creating the positions to read_fwf
+stu_qqq_2012 <- read_fwf(file = 'data/stu_qqq_2012.txt', col_positions = fwf_widths(dict_student_2012$width), progress = T)
+
+# Assigns column headers using dictionary
+colnames(stu_qqq_2012) <- dict_student_2012$varname
+```
+
+Each dataset is a tibble dataframe, containing observations (rows) across variables (columns). Each observation corresponds to an entry from a student who participated in the PISA survey for students in the respective years, and the variables correspond to information from students on various aspects of their home, family, and school background.
+
+# Data Wrangling
+
+
+
+
+## Filtering for required dataset
+
+*CNT* refers to the country of response, we can use this to filter for Singapore (where *CNT = SGP*) responses for our analysis. [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) of the [**dplyr**](https://dplyr.tidyverse.org/) package allows us to perform this extraction of participating country.
+
+```{r}
+#| eval: false
+
+# Filter each dataset for CNT = "SGP"
+
+stu_qqq_2012_SG <- stu_qqq_2012 %>% 
+  filter(CNT == "SGP")
+
+stu_qqq_2015_SG <- stu_qqq_2015 %>% 
+  filter(CNT == "SGP")
+
+stu_qqq_2018_SG <- stu_qqq_2018 %>% 
+  filter(CNT == "SGP")
+
+stu_qqq_2022_SG <- stu_qqq_2022 %>% 
+  filter(CNT == "SGP")
+
+```
+
+
+The function below will extract required columns for longitudinal analysis of the three main subject scores for each year. The expected argument is:
+
+-   object: name of object which the survey is stored in
+-   colnames: names of columns with partial string match
+-   year: year which the observations were related to
+
+
+```{r}
+#| eval: false
+
+# Filter each dataset for CNT = "SG"
+long <- function(object, colnames, year) {
+  result <- object %>% 
+    filter(CNT == "SGP") %>% 
+    select(grep(colnames)) %>% 
+    mutate(year = str_sub(object, 9, 12))
+}
+
+
+
+```
+
+The *.rds* file format is usually smaller than its SAS file counterpart and will therefore take up less storage space. The *.rds* file will also preserve data types and classes such as factors and dates eliminating the need to redefine data types after loading the file. For fast and space efficient data storage, files can be exported as RDS and re-imported into R using [`write_rds()`](https://readr.tidyverse.org/reference/read_rds.html) and [`read_rds()`](https://readr.tidyverse.org/reference/read_rds.html) respectively.
+
+```{r}
+#| eval: false
+write_rds(stu_qqq_2022_SG, "data/stu_qqq_2022_SG.rds")
+```
+
+```{r}
+#stu_SG <- read_rds("data/stu_SG.rds")
+```
+
+# Data Health
+
+## Duplicates Check
+
+Before moving on to the next step, let us check for duplicated records to prevent double counting of our results with the help of `group_by_all()` to detect if there are more than one instance of a row with the same details throughout all the columns.
+
+```{r}
+#duplicate <- stu_SG %>% 
+#  group_by_all() %>% 
+#  filter(n()>1) %>% 
+#  ungroup()
+  
+#duplicate
+```
+
+
