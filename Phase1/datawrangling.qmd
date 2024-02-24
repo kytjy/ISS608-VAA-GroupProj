@@ -92,64 +92,71 @@ Each dataset is a tibble dataframe, containing observations (rows) across variab
 
 # Data Wrangling
 
+The data manipulation is performed in 2 parts:
 
-
+-   *Longitudinal data:* Firstly, we extract 
+-   *2022 Snapshot data:* 
 
 ## Filtering for required dataset
 
+### Longitudinal Data
+
+The function below will extract required columns for longitudinal analysis of the three main subject scores for each year. The expected argument *object* takes the name of object which the survey is stored in and performs the following:
+
+-   `deparse(substitute(object))`: Returns the name of the object as a character string and stores this as a variable *filename*.
+-   `filter()`: Filters the dataset to only include responses from Singapore students.
+-   `mutate()`: Creates a new column containing the year the responses it pertains to, extracted from the file name using `substr()`.
+-   `matches()`: Select columns containing either "MATH", "SCIE", or "READ" to extract the plausible values of scores related to the subjects of Mathematics, Science, and Reading.
+
+```{r}
+#| eval: false
+
+long <- function(object) {
+  
+  filename <- deparse(substitute(object))
+  
+  result <- object %>% 
+    filter(CNT == "SGP") %>% 
+    mutate(year = substr(filename, 9, 12)) %>% 
+    select(year, matches("^PV.*?(MATH|SCIE|READ)$"))  
+
+  return(result)
+}
+
+```
+
+```{r}
+#| eval: false
+stu_2012_SG <- long(stu_qqq_2012)
+stu_2015_SG <- long(stu_qqq_2015)
+stu_2018_SG <- long(stu_qqq_2018)
+stu_2022_SG <- long(stu_qqq_2022)
+```
+
+
+~WIP~
+
+The *.rds* file format is usually smaller than its SAS file counterpart and will therefore take up less storage space. The *.rds* file will also preserve data types and classes such as factors and dates eliminating the need to redefine data types after loading the file. For fast and space efficient data storage, files can be exported as RDS and re-imported into R using [`write_rds()`](https://readr.tidyverse.org/reference/read_rds.html) and [`read_rds()`](https://readr.tidyverse.org/reference/read_rds.html) respectively.
+
+```{r}
+#| eval: false
+#write_rds(stu_qqq_2022_SG, "data/stu_qqq_2022_SG.rds")
+```
+
+```{r}
+#stu_SG <- read_rds("data/stu_SG.rds")
+```
+
+### 2022 Snapshot Data
 *CNT* refers to the country of response, we can use this to filter for Singapore (where *CNT = SGP*) responses for our analysis. [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) of the [**dplyr**](https://dplyr.tidyverse.org/) package allows us to perform this extraction of participating country.
 
 ```{r}
 #| eval: false
 
 # Filter each dataset for CNT = "SGP"
-
-stu_qqq_2012_SG <- stu_qqq_2012 %>% 
-  filter(CNT == "SGP")
-
-stu_qqq_2015_SG <- stu_qqq_2015 %>% 
-  filter(CNT == "SGP")
-
-stu_qqq_2018_SG <- stu_qqq_2018 %>% 
-  filter(CNT == "SGP")
-
 stu_qqq_2022_SG <- stu_qqq_2022 %>% 
   filter(CNT == "SGP")
 
-```
-
-
-The function below will extract required columns for longitudinal analysis of the three main subject scores for each year. The expected argument is:
-
--   object: name of object which the survey is stored in
--   colnames: names of columns with partial string match
--   year: year which the observations were related to
-
-
-```{r}
-#| eval: false
-
-# Filter each dataset for CNT = "SG"
-long <- function(object, colnames, year) {
-  result <- object %>% 
-    filter(CNT == "SGP") %>% 
-    select(grep(colnames)) %>% 
-    mutate(year = str_sub(object, 9, 12))
-}
-
-
-
-```
-
-The *.rds* file format is usually smaller than its SAS file counterpart and will therefore take up less storage space. The *.rds* file will also preserve data types and classes such as factors and dates eliminating the need to redefine data types after loading the file. For fast and space efficient data storage, files can be exported as RDS and re-imported into R using [`write_rds()`](https://readr.tidyverse.org/reference/read_rds.html) and [`read_rds()`](https://readr.tidyverse.org/reference/read_rds.html) respectively.
-
-```{r}
-#| eval: false
-write_rds(stu_qqq_2022_SG, "data/stu_qqq_2022_SG.rds")
-```
-
-```{r}
-#stu_SG <- read_rds("data/stu_SG.rds")
 ```
 
 # Data Health

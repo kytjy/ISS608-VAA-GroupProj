@@ -198,7 +198,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">Data Wrangling</a>
   <ul class="collapse">
-  <li><a href="#filtering-for-required-dataset" id="toc-filtering-for-required-dataset" class="nav-link" data-scroll-target="#filtering-for-required-dataset">Filtering for required dataset</a></li>
+  <li><a href="#filtering-for-required-dataset" id="toc-filtering-for-required-dataset" class="nav-link" data-scroll-target="#filtering-for-required-dataset">Filtering for required dataset</a>
+  <ul class="collapse">
+  <li><a href="#longitudinal-data" id="toc-longitudinal-data" class="nav-link" data-scroll-target="#longitudinal-data">Longitudinal Data</a></li>
+  <li><a href="#snapshot-data" id="toc-snapshot-data" class="nav-link" data-scroll-target="#snapshot-data">2022 Snapshot Data</a></li>
+  </ul></li>
   </ul></li>
   <li><a href="#data-health" id="toc-data-health" class="nav-link" data-scroll-target="#data-health">Data Health</a>
   <ul class="collapse">
@@ -298,46 +302,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="data-wrangling" class="level1">
 <h1>Data Wrangling</h1>
+<p>The data manipulation is performed in 2 parts:</p>
+<ul>
+<li><em>Longitudinal data:</em> Firstly, we extract</li>
+<li><em>2022 Snapshot data:</em></li>
+</ul>
 <section id="filtering-for-required-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="filtering-for-required-dataset">Filtering for required dataset</h2>
-<p><em>CNT</em> refers to the country of response, we can use this to filter for Singapore (where <em>CNT = SGP</em>) responses for our analysis. <a href="https://dplyr.tidyverse.org/reference/filter.html"><code>filter()</code></a> of the <a href="https://dplyr.tidyverse.org/"><strong>dplyr</strong></a> package allows us to perform this extraction of participating country.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter each dataset for CNT = "SGP"</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>stu_qqq_2012_SG <span class="ot">&lt;-</span> stu_qqq_2012 <span class="sc">%&gt;%</span> </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(CNT <span class="sc">==</span> <span class="st">"SGP"</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>stu_qqq_2015_SG <span class="ot">&lt;-</span> stu_qqq_2015 <span class="sc">%&gt;%</span> </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(CNT <span class="sc">==</span> <span class="st">"SGP"</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>stu_qqq_2018_SG <span class="ot">&lt;-</span> stu_qqq_2018 <span class="sc">%&gt;%</span> </span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(CNT <span class="sc">==</span> <span class="st">"SGP"</span>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>stu_qqq_2022_SG <span class="ot">&lt;-</span> stu_qqq_2022 <span class="sc">%&gt;%</span> </span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(CNT <span class="sc">==</span> <span class="st">"SGP"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>The function below will extract required columns for longitudinal analysis of the three main subject scores for each year. The expected argument is:</p>
+<section id="longitudinal-data" class="level3">
+<h3 class="anchored" data-anchor-id="longitudinal-data">Longitudinal Data</h3>
+<p>The function below will extract required columns for longitudinal analysis of the three main subject scores for each year. The expected argument <em>object</em> takes the name of object which the survey is stored in and performs the following:</p>
 <ul>
-<li>object: name of object which the survey is stored in</li>
-<li>colnames: names of columns with partial string match</li>
-<li>year: year which the observations were related to</li>
+<li><code>deparse(substitute(object))</code>: Returns the name of the object as a character string and stores this as a variable <em>filename</em>.</li>
+<li><code>filter()</code>: Filters the dataset to only include responses from Singapore students.</li>
+<li><code>mutate()</code>: Creates a new column containing the year the responses it pertains to, extracted from the file name using <code>substr()</code>.</li>
+<li><code>matches()</code>: Select columns containing either “MATH”, “SCIE”, or “READ” to extract the plausible values of scores related to the subjects of Mathematics, Science, and Reading.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter each dataset for CNT = "SG"</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>long <span class="ot">&lt;-</span> <span class="cf">function</span>(object, colnames, year) {</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> object <span class="sc">%&gt;%</span> </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(CNT <span class="sc">==</span> <span class="st">"SGP"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="fu">grep</span>(colnames)) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">str_sub</span>(object, <span class="dv">9</span>, <span class="dv">12</span>))</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>long <span class="ot">&lt;-</span> <span class="cf">function</span>(object) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  filename <span class="ot">&lt;-</span> <span class="fu">deparse</span>(<span class="fu">substitute</span>(object))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> object <span class="sc">%&gt;%</span> </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(CNT <span class="sc">==</span> <span class="st">"SGP"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">substr</span>(filename, <span class="dv">9</span>, <span class="dv">12</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(year, <span class="fu">matches</span>(<span class="st">"^PV.*?(MATH|SCIE|READ)$"</span>))  </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>stu_2012_SG <span class="ot">&lt;-</span> <span class="fu">long</span>(stu_qqq_2012)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>stu_2015_SG <span class="ot">&lt;-</span> <span class="fu">long</span>(stu_qqq_2015)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>stu_2018_SG <span class="ot">&lt;-</span> <span class="fu">long</span>(stu_qqq_2018)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>stu_2022_SG <span class="ot">&lt;-</span> <span class="fu">long</span>(stu_qqq_2022)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><sub>WIP</sub></p>
 <p>The <em>.rds</em> file format is usually smaller than its SAS file counterpart and will therefore take up less storage space. The <em>.rds</em> file will also preserve data types and classes such as factors and dates eliminating the need to redefine data types after loading the file. For fast and space efficient data storage, files can be exported as RDS and re-imported into R using <a href="https://readr.tidyverse.org/reference/read_rds.html"><code>write_rds()</code></a> and <a href="https://readr.tidyverse.org/reference/read_rds.html"><code>read_rds()</code></a> respectively.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(stu_qqq_2022_SG, <span class="st">"data/stu_qqq_2022_SG.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#write_rds(stu_qqq_2022_SG, "data/stu_qqq_2022_SG.rds")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#stu_SG &lt;- read_rds("data/stu_SG.rds")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="snapshot-data" class="level3">
+<h3 class="anchored" data-anchor-id="snapshot-data">2022 Snapshot Data</h3>
+<p><em>CNT</em> refers to the country of response, we can use this to filter for Singapore (where <em>CNT = SGP</em>) responses for our analysis. <a href="https://dplyr.tidyverse.org/reference/filter.html"><code>filter()</code></a> of the <a href="https://dplyr.tidyverse.org/"><strong>dplyr</strong></a> package allows us to perform this extraction of participating country.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter each dataset for CNT = "SGP"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>stu_qqq_2022_SG <span class="ot">&lt;-</span> stu_qqq_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(CNT <span class="sc">==</span> <span class="st">"SGP"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 </section>
 </section>
 <section id="data-health" class="level1">
@@ -346,12 +363,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="duplicates-check">Duplicates Check</h2>
 <p>Before moving on to the next step, let us check for duplicated records to prevent double counting of our results with the help of <code>group_by_all()</code> to detect if there are more than one instance of a row with the same details throughout all the columns.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#duplicate &lt;- stu_SG %&gt;% </span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  group_by_all() %&gt;% </span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  filter(n()&gt;1) %&gt;% </span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  ungroup()</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#duplicate</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#duplicate &lt;- stu_SG %&gt;% </span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  group_by_all() %&gt;% </span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  filter(n()&gt;1) %&gt;% </span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  ungroup()</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#duplicate</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
