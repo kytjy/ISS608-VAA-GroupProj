@@ -15,14 +15,14 @@ execute:
     code-line-numbers: true
 ---
 
-# PISA Data
+# 1 PISA Data
 
-The PISA Data from 2000 to 2022 is available on the [OECD website](https://www.oecd.org/pisa/data/).
+The PISA Data from 2000 to 2022 are available on the [OECD website](https://www.oecd.org/pisa/data/).
 
-# Getting Started
+# 2 Getting Started
 
 | **Library**                                 | **Description**                                                                                               |
-|---------------------|---------------------------------------------------|
+|-----------------------|-------------------------------------------------|
 | [**tidyverse**](https://www.tidyverse.org/) | A collection of core packages designed for data science, used extensively for data preparation and wrangling. |
 | [**haven**](https://haven.tidyverse.org/)   | To enable R to read and write various data formats such as SAS and SPSS.                                      |
 | [**knitr**](https://yihui.org/knitr/)       | For dynamic report generation.                                                                                |
@@ -32,16 +32,18 @@ The PISA Data from 2000 to 2022 is available on the [OECD website](https://www.o
 The following code chunk uses `p_load()` of [**pacman**](https://rpubs.com/akshaypatankar/594834) package to check if tidyverse packages are installed in the computer. If they are, the libraries will be called into R.
 
 ```{r}
-pacman::p_load(tidyverse, haven, knitr, gt)
+pacman::p_load(tidyverse, haven, knitr, 
+               sjlabelled,
+               gt)
 ```
 
-# Reading Data into R
+# 3 Reading Data into R
 
 The next two sections cover the steps taken to read in the raw data.
 
-## Importing sas file
+## 3.1 Importing sas file
 
-From PISA 2015 and its later cycles, SAS data sets (`.sas`) are available with all countries in the file for each repsondent type.
+From PISA 2015 and its later cycles, SAS data sets (`.sas`) are available with all countries in the file for each respondent type.
 
 The code chunk below imports the *2015, 2018, 2022 Student Questionnaire* dataset downloaded from OECD's PISA Database using the following functions:
 
@@ -53,7 +55,7 @@ The code chunk below imports the *2015, 2018, 2022 Student Questionnaire* datase
 
     -   `sub()` to extract parts of the file name,
 
-    -   `assign` assigns extracted partial file name to the data read
+    -   `assign()` assigns extracted partial file name to the data that was read,
 
 ```{r}
 #| eval: false
@@ -71,7 +73,8 @@ for (i in 1:length(filenames))
 }
 ```
 
-## Importing txt file with dictionary
+
+## 3.2 Importing txt file with dictionary
 
 PISA 2012 and its earlier cycles' data are provided in 2 forms -- a fixed width (or ASCII) text format (`.txt`), and the corresponding SAS import control syntax file (`.sas`) for reading the data.
 
@@ -90,23 +93,55 @@ colnames(stu_qqq_2012) <- dict_student_2012$varname
 
 Each dataset is a tibble dataframe, containing observations (rows) across variables (columns). Each observation corresponds to an entry from a student who participated in the PISA survey for students in the respective years, and the variables correspond to information from students on various aspects of their home, family, and school background.
 
-# Data Wrangling
+# 4 Data Wrangling
+
+```{mermaid}
+%%| fig-width: 8
+%%| echo: false
+
+flowchart TD
+
+    A[PISA Survey] --> A1[2022 Data Student Questionnaire] 
+
+
+    A1 -.-> A11(Gender)
+    A1 -.-> A12(Socio-economic)
+    A1 -.-> A13(Psychological Wellbeing)
+    A1 -.-> A14(Schools)  
+
+    A1 -.-> A2   
+    A2[Combine 2012-2018]-.->A3(Longitudinal)
+
+    
+
+
+
+```
+
 
 The data manipulation is performed in 2 parts:
 
--   *Longitudinal data:* Firstly, we extract 
--   *2022 Snapshot data:* 
+-   *Longitudinal data:* To conduct longitudinal comparisons of PISA scores of Singapore students across different years.
+-   *Detailed 2022 Student's Questionnaire data:* To compare the PISA scores between different groups of students based on factors such as gender, socioeconomic status (e.g., employment status of parents, immigrant status), and psychological well-being (e.g., feeling of loneliness, resilience when faced with challenges). On top of that, we aim to gain an understanding of the varying levels of importance and statistical significance of the various influences on PISA scores for different clusters of students.
 
-## Filtering for required dataset
+## 4.1 Filtering for required dataset
 
-### Longitudinal Data
+### 4.1.1 The Longitudinal Data
 
-The function below will extract required columns for longitudinal analysis of the three main subject scores for each year. The expected argument *object* takes the name of object which the survey is stored in and performs the following:
+The helper function below is designed to extract and process data for longitudinal analysis of student scores in Math, Science and Reading. Let's break down the function:
 
--   `deparse(substitute(object))`: Returns the name of the object as a character string and stores this as a variable *filename*.
--   `filter()`: Filters the dataset to only include responses from Singapore students.
--   `mutate()`: Creates a new column containing the year the responses it pertains to, extracted from the file name using `substr()`.
--   `matches()`: Select columns containing either "MATH", "SCIE", or "READ" to extract the plausible values of scores related to the subjects of Mathematics, Science, and Reading.
+1.  *Object*: The expected argument *object* retrieves the name of object which the survey is stored in.
+2.  `deparse(substitute(object))`: Returns the name of the object as a character string and stores this as a variable *filename*.
+3.  `filter()`: Filters the dataset to only include responses from Singapore students.
+4.  `matches()`: Select columns that starts with "PV" and contains either "MATH", "SCIE", or "READ" to extract the plausible values of scores related to the subjects of Mathematics, Science, and Reading.
+    1.  `^PV`: Matches the beginning of the column name with "PV".
+    2.  `.*?`: Matches any character (`.`) zero or more times (`*`), as few times as possible (`?`). This allows for any or no characters to appear between "PV" and the subject name.
+    3.  `(MATH|SCIE|READ)`: Is a group containing three alternative subjects to be matched, separated by `|`.
+    4.  `$`: Matches the end of the column name.
+5.  `mutate()`: Creates new columns to contain newly derived variables.
+    -   *year*: Represent the responses it pertains to, extracted from the file name using `substr()`.
+    -   *math*, *reading*, *science*: Calculates the mean plausible value for math, reading, and science scores for each student using `rowMeans()` applied across selected columns identified by \`matches()\`\`
+6.  `select()`: Retains the relevant columns for our analysis.
 
 ```{r}
 #| eval: false
@@ -117,47 +152,126 @@ long <- function(object) {
   
   result <- object %>% 
     filter(CNT == "SGP") %>% 
-    mutate(year = substr(filename, 9, 12)) %>% 
-    select(year, matches("^PV.*?(MATH|SCIE|READ)$"))  
-
+    select(matches("^PV.*?(MATH|SCIE|READ)$")) %>% 
+    mutate(year = substr(filename, 9, 12),
+           math = rowMeans(across(matches("^PV.*?(MATH)$")), na.rm = TRUE),
+           reading = rowMeans(across(matches("^PV.*?(READ)$")), na.rm = TRUE),
+           science = rowMeans(across(matches("^PV.*?(SCIE)$")), na.rm = TRUE),
+           ) %>% 
+    select(year, math, reading, science)
+  
   return(result)
 }
 
 ```
 
+Let's get the required data using the `long` function defined and combine all the results from various years together in 1 dataset named *stu_longitudinal* using `bind_rows()`. 
+
 ```{r}
 #| eval: false
-stu_2012_SG <- long(stu_qqq_2012)
-stu_2015_SG <- long(stu_qqq_2015)
-stu_2018_SG <- long(stu_qqq_2018)
-stu_2022_SG <- long(stu_qqq_2022)
+long_2012_SG <- long(stu_qqq_2012)
+long_2015_SG <- long(stu_qqq_2015)
+long_2018_SG <- long(stu_qqq_2018)
+long_2022_SG <- long(stu_qqq_2022)
+
+stu_longtitudinal <-
+  bind_rows(list(long_2012_SG,
+                long_2015_SG,
+                long_2018_SG,
+                long_2022_SG))
 ```
 
-
-~WIP~
 
 The *.rds* file format is usually smaller than its SAS file counterpart and will therefore take up less storage space. The *.rds* file will also preserve data types and classes such as factors and dates eliminating the need to redefine data types after loading the file. For fast and space efficient data storage, files can be exported as RDS and re-imported into R using [`write_rds()`](https://readr.tidyverse.org/reference/read_rds.html) and [`read_rds()`](https://readr.tidyverse.org/reference/read_rds.html) respectively.
 
 ```{r}
 #| eval: false
-#write_rds(stu_qqq_2022_SG, "data/stu_qqq_2022_SG.rds")
+write_rds(stu_longtitudinal, "data/stu_longtitudinal.rds")
 ```
 
 ```{r}
-#stu_SG <- read_rds("data/stu_SG.rds")
+stu_longtitudinal <- read_rds("data/stu_longtitudinal.rds")
 ```
 
-### 2022 Snapshot Data
-*CNT* refers to the country of response, we can use this to filter for Singapore (where *CNT = SGP*) responses for our analysis. [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) of the [**dplyr**](https://dplyr.tidyverse.org/) package allows us to perform this extraction of participating country.
+Let's take a look at the first 10 rows of our longitudinal dataset.
+
+```{r}
+#| echo: false
+
+DT::datatable(head(stu_longtitudinal, 10),
+              filter = 'top',
+              class = "compact",
+              options = list(pageLength = 5, dom = 'tip'))
+```
+
+
+### 4.1.2 The 2022 Student's Questionnaire data
+
+After perusing through the [Codebook](https://webfs.oecd.org/pisa2022/CY08MSP_CODEBOOK_5thDecember23.xlsx) and [Technical Report](https://www.oecd.org/pisa/data/pisa2022technicalreport/), the team narrowed down the questions from the survey that would yield insightful results. The names of the columns are stored in a *.csv* file named *colname*. 
+
+To filter the raw dataset with the columns, we first import *colname* into R environment using [`read_csv()`](https://readr.tidyverse.org/reference/read_delim.html) function of [**readr**](https://readr.tidyverse.org/) package.
+
+```{r}
+#| eval: false
+colname <- read_csv("data/colname.csv")
+```
+
+The following code chunk serves the following purpose:
+-   [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) of the [**dplyr**](https://dplyr.tidyverse.org/) package to extract Singapore responses, where *CNT = SGP*, for a more focused analysis,
+-   [`select()`](https://dplyr.tidyverse.org/reference/select.html) function
+    -   To keep columns identified in *colname*,
+    -   Retain only variables with <20% missing values
+-   
 
 ```{r}
 #| eval: false
 
-# Filter each dataset for CNT = "SGP"
 stu_qqq_2022_SG <- stu_qqq_2022 %>% 
-  filter(CNT == "SGP")
+  
+  # Filter each dataset for CNT = "SGP"
+  filter(CNT == "SGP") %>% 
+
+  # Retains desired variables
+  select(colname$colname) %>% 
+
+  # Retains variables with <20% missing values
+  select(which(colSums(is.na(.))/nrow(.) < 0.2)) %>% 
+
+  # Calculates the mean of plausible values for each subject per student
+  mutate(math = rowMeans(across(matches("^PV.*?(MATH)$")), na.rm = TRUE),
+         reading = rowMeans(across(matches("^PV.*?(READ)$")), na.rm = TRUE),
+         science = rowMeans(across(matches("^PV.*?(SCIE)$")), na.rm = TRUE),
+         ) %>% 
+  
+  # Drops Plausible Values columns
+  select(-matches("^PV.*?(MATH|SCIE|READ)$"))
+
 
 ```
+
+`stu_qqq_2022_SG` contains 6606 observations across 266 variables. 
+
+```{r}
+#| eval: false
+write_rds(stu_qqq_2022_SG, "data/stu_qqq_2022_SG.rds")
+```
+
+```{r}
+stu_qqq_2022_SG <- read_rds("data/stu_qqq_2022_SG.rds")
+
+```
+
+
+Below are the retained variables and the Survey question it pertains to.
+
+```{r}
+labelled::generate_dictionary(stu_qqq_2022_SG)
+```
+
+
+
+
+
 
 # Data Health
 
@@ -173,5 +287,3 @@ Before moving on to the next step, let us check for duplicated records to preven
   
 #duplicate
 ```
-
-
