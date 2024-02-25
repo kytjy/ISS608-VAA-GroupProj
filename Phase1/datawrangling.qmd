@@ -4,7 +4,7 @@ title-block-banner: true
 toc: true
 editor: visual
 execute: 
-  freeze: auto
+  freeze: true
   warning: false
   #echo: false
   #message: false
@@ -22,7 +22,7 @@ The PISA Data from 2000 to 2022 are available on the [OECD website](https://www.
 # 2 Getting Started
 
 | **Library**                                 | **Description**                                                                                               |
-|-----------------------|-------------------------------------------------|
+|------------------------|-----------------------------------------------|
 | [**tidyverse**](https://www.tidyverse.org/) | A collection of core packages designed for data science, used extensively for data preparation and wrangling. |
 | [**haven**](https://haven.tidyverse.org/)   | To enable R to read and write various data formats such as SAS and SPSS.                                      |
 | [**knitr**](https://yihui.org/knitr/)       | For dynamic report generation.                                                                                |
@@ -53,7 +53,7 @@ The code chunk below imports the *2015, 2018, 2022 Student Questionnaire* datase
 
     -   `read_sas()` function of the [**haven**](https://haven.tidyverse.org/) package to import each file into the R environment,
 
-    -   `sub()` to extract parts of the file name,
+    -   `sub()` to extract parts of the file name without extension and parent directory path,
 
     -   `assign()` assigns extracted partial file name to the data that was read,
 
@@ -72,7 +72,6 @@ for (i in 1:length(filenames))
   assign (name, data)
 }
 ```
-
 
 ## 3.2 Importing txt file with dictionary
 
@@ -118,7 +117,6 @@ flowchart TD
 
 ```
 
-
 The data manipulation is performed in 2 parts:
 
 -   *Longitudinal data:* To conduct longitudinal comparisons of PISA scores of Singapore students across different years.
@@ -133,15 +131,12 @@ The helper function below is designed to extract and process data for longitudin
 1.  *Object*: The expected argument *object* retrieves the name of object which the survey is stored in.
 2.  `deparse(substitute(object))`: Returns the name of the object as a character string and stores this as a variable *filename*.
 3.  `filter()`: Filters the dataset to only include responses from Singapore students.
-4.  `matches()`: Select columns that starts with "PV" and contains either "MATH", "SCIE", or "READ" to extract the plausible values of scores related to the subjects of Mathematics, Science, and Reading.
-    1.  `^PV`: Matches the beginning of the column name with "PV".
-    2.  `.*?`: Matches any character (`.`) zero or more times (`*`), as few times as possible (`?`). This allows for any or no characters to appear between "PV" and the subject name.
-    3.  `(MATH|SCIE|READ)`: Is a group containing three alternative subjects to be matched, separated by `|`.
-    4.  `$`: Matches the end of the column name.
+4.  `select()`: Retains columns that starts with "PV" and contains either "MATH", "SCIE", or "READ" to extract the plausible values of scores related to the subjects of Mathematics, Science, and Reading.
+    1.  `starts_with()`: Matches the beginning of the column name with "PV", and
+    2.  `contains()`: Searches for columns containing three alternative subjects to be matched.
 5.  `mutate()`: Creates new columns to contain newly derived variables.
     -   *year*: Represent the responses it pertains to, extracted from the file name using `substr()`.
-    -   *math*, *reading*, *science*: Calculates the mean plausible value for math, reading, and science scores for each student using `rowMeans()` applied across selected columns identified by \`matches()\`\`
-6.  `select()`: Retains the relevant columns for our analysis.
+    -   *math*, *reading*, *science*: Calculates the mean plausible value for math, reading, and science scores for each student using `rowMeans()` applied across selected columns identified by \`select()\`\`
 
 ```{r}
 #| eval: false
@@ -152,11 +147,11 @@ long <- function(object) {
   
   result <- object %>% 
     filter(CNT == "SGP") %>% 
-    select(matches("^PV.*?(MATH|SCIE|READ)$")) %>% 
+    select(starts_with("PV") & contains(c("MATH", "READ", "SCIE"))) %>% 
     mutate(year = substr(filename, 9, 12),
-           math = rowMeans(across(matches("^PV.*?(MATH)$")), na.rm = TRUE),
-           reading = rowMeans(across(matches("^PV.*?(READ)$")), na.rm = TRUE),
-           science = rowMeans(across(matches("^PV.*?(SCIE)$")), na.rm = TRUE),
+           math = rowMeans(across(starts_with("PV") & contains("MATH")), na.rm = TRUE),
+           reading = rowMeans(across(starts_with("PV") & contains("READ")), na.rm = TRUE),
+           science = rowMeans(across(starts_with("PV") & contains("SCIE")), na.rm = TRUE),
            ) %>% 
     select(year, math, reading, science)
   
@@ -165,7 +160,7 @@ long <- function(object) {
 
 ```
 
-Let's get the required data using the `long` function defined and combine all the results from various years together in 1 dataset named *stu_longitudinal* using `bind_rows()`. 
+Let's get the required data using the `long` function defined and combine all the results from various years together in 1 dataset named *stu_longitudinal* using `bind_rows()`.
 
 ```{r}
 #| eval: false
@@ -180,7 +175,6 @@ stu_longtitudinal <-
                 long_2018_SG,
                 long_2022_SG))
 ```
-
 
 The *.rds* file format is usually smaller than its SAS file counterpart and will therefore take up less storage space. The *.rds* file will also preserve data types and classes such as factors and dates eliminating the need to redefine data types after loading the file. For fast and space efficient data storage, files can be exported as RDS and re-imported into R using [`write_rds()`](https://readr.tidyverse.org/reference/read_rds.html) and [`read_rds()`](https://readr.tidyverse.org/reference/read_rds.html) respectively.
 
@@ -204,10 +198,9 @@ DT::datatable(head(stu_longtitudinal, 10),
               options = list(pageLength = 5, dom = 'tip'))
 ```
 
-
 ### 4.1.2 The 2022 Student's Questionnaire data
 
-After perusing through the [Codebook](https://webfs.oecd.org/pisa2022/CY08MSP_CODEBOOK_5thDecember23.xlsx) and [Technical Report](https://www.oecd.org/pisa/data/pisa2022technicalreport/), the team narrowed down the questions from the survey that would yield insightful results. The names of the columns are stored in a *.csv* file named *colname*. 
+After perusing through the [Codebook](https://webfs.oecd.org/pisa2022/CY08MSP_CODEBOOK_5thDecember23.xlsx) and [Technical Report](https://www.oecd.org/pisa/data/pisa2022technicalreport/), the team narrowed down the questions from the survey that would yield insightful results. The names of the columns are stored in a *.csv* file named *colname*.
 
 To filter the raw dataset with the columns, we first import *colname* into R environment using [`read_csv()`](https://readr.tidyverse.org/reference/read_delim.html) function of [**readr**](https://readr.tidyverse.org/) package.
 
@@ -217,11 +210,17 @@ colname <- read_csv("data/colname.csv")
 ```
 
 The following code chunk serves the following purpose:
--   [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) of the [**dplyr**](https://dplyr.tidyverse.org/) package to extract Singapore responses, where *CNT = SGP*, for a more focused analysis,
--   [`select()`](https://dplyr.tidyverse.org/reference/select.html) function
-    -   To keep columns identified in *colname*,
-    -   Retain only variables with <20% missing values
--   
+
+-   `filter()` of the [**dplyr**](https://dplyr.tidyverse.org/) package to extract Singapore responses, where *CNT = SGP*, for a more focused analysis,
+
+-   `select()` function:
+
+    -   To keep columns identified in *colname*
+    -   Retain only variables with \<20% missing values
+
+-   `mutate()` to create 3 new variables to store the mean plausible values for each subject for each row using `rowMeans()` and `across()`.
+
+-   `starts_with()` and `contains()` helps identify the columns relating to the subject.
 
 ```{r}
 #| eval: false
@@ -238,18 +237,18 @@ stu_qqq_2022_SG <- stu_qqq_2022 %>%
   select(which(colSums(is.na(.))/nrow(.) < 0.2)) %>% 
 
   # Calculates the mean of plausible values for each subject per student
-  mutate(math = rowMeans(across(matches("^PV.*?(MATH)$")), na.rm = TRUE),
-         reading = rowMeans(across(matches("^PV.*?(READ)$")), na.rm = TRUE),
-         science = rowMeans(across(matches("^PV.*?(SCIE)$")), na.rm = TRUE),
+  mutate(math = rowMeans(across(starts_with("PV") & contains("MATH")), na.rm = TRUE),
+         reading = rowMeans(across(starts_with("PV") & contains("READ")), na.rm = TRUE),
+         science = rowMeans(across(starts_with("PV") & contains("SCIE")), na.rm = TRUE),
          ) %>% 
   
   # Drops Plausible Values columns
-  select(-matches("^PV.*?(MATH|SCIE|READ)$"))
+  select(-starts_with("PV"))
 
 
 ```
 
-`stu_qqq_2022_SG` contains 6606 observations across 266 variables. 
+`stu_qqq_2022_SG` contains 6606 observations across 266 variables.
 
 ```{r}
 #| eval: false
@@ -261,29 +260,56 @@ stu_qqq_2022_SG <- read_rds("data/stu_qqq_2022_SG.rds")
 
 ```
 
+## 4.2 Recoding Questionnaire Responses
 
-Below are the retained variables and the Survey question it pertains to.
+There are several types of responses for the Student's Questionnaire. For a start, I will store the levels and their numerical for the Yes/No questions in a vector to be applied to all the questions using a similar scale.
 
 ```{r}
-labelled::generate_dictionary(stu_qqq_2022_SG)
+#| eval: false
+yesno <- c('1' = "Yes", 
+            '2' = "No")
+
+yesno_col <- starts_with("ST250Q",)
+
+count <- c('1' = "0", 
+           '2' = "1",
+           '3' = "2",
+           '4' = ">2")
+
+count_col <- starts_with("ST251Q")
+
+digicount <- c('1' = "0",
+                  '2' = "1 or 2",
+                  '3' = "3-5",
+                  '4' = ">5",
+                  '5' = "I don't know")
+
+digicount_col <- starts_with("ST254Q")
+
+bookcount <- c('1' = "0",
+               '2' = "1-5",
+               '3' = "6-10",
+               '4' = ">10",
+               '5' = "I don't know")
+  
+  
+bookcount_col <- starts_with("ST256Q")
+
+country <- c('1' = "Singapore",
+             '2' = "Other Country")
+
+country_col <- starts_with("ST019")
+
+
+agreedisagree <- c('1' = "Strongly Disagree",
+                   '2' = "Disagree",
+                   '3' = "Agree",
+                   '4' = "Strongly Agree")
+
+agreedisagree_col <- starts_with("ST267Q")
+
 ```
-
-
-
-
-
 
 # Data Health
 
 ## Duplicates Check
-
-Before moving on to the next step, let us check for duplicated records to prevent double counting of our results with the help of `group_by_all()` to detect if there are more than one instance of a row with the same details throughout all the columns.
-
-```{r}
-#duplicate <- stu_SG %>% 
-#  group_by_all() %>% 
-#  filter(n()>1) %>% 
-#  ungroup()
-  
-#duplicate
-```

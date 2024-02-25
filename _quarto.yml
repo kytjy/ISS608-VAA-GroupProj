@@ -20,6 +20,8 @@ website:
         menu: 
           - text: Data Wrangling
             href: "phase1/datawrangling.html"
+          - text: Variables
+            href: "phase1/variables.html"            
           - text: Prototype
             href: "phase1/prototype.html"        
       - text: "Shiny App"
