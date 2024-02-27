@@ -1,0 +1,409 @@
+---
+title: "Phase 1: Data Wrangling"
+title-block-banner: true
+toc: true
+editor: visual
+execute: 
+  freeze: true
+  warning: false
+  #echo: false
+  #message: false
+  html:
+    code-fold: True
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+# 1 PISA Data
+
+The 2022 PISA Data is available on the [OECD website](https://www.oecd.org/pisa/data/).
+
+# 2 Getting Started
+
+| **Library**                                                                                                                               | **Description**                                                          |
+|--------------------------|----------------------------------------------|
+| [**tidyverse**](https://www.tidyverse.org/), [**janitor**](https://sfirke.github.io/janitor/reference/index.html)                         | For data preparation, wrangling, and exploration.                        |
+| [**haven**](https://haven.tidyverse.org/)                                                                                                 | To enable R to read and write various data formats such as SAS and SPSS. |
+| [**knitr**](https://yihui.org/knitr/), [**DT**](https://rstudio.github.io/DT/), [**kableExtra**](https://haozhu233.github.io/kableExtra/) | For dynamic report generation.                                           |
+| [**labelled**](https://larmarange.github.io/labelled/)                                                                                    | For reading and manipulating variable labels.                            |
+| [**gtsummary**](https://www.danieldsjoberg.com/gtsummary/)                                                                                | For summary and analytical tables.                                       |
+
+: {tbl-colwidths="\[20,80\]"}
+
+The following code chunk uses `p_load()` of [**pacman**](https://rpubs.com/akshaypatankar/594834) package to check if tidyverse packages are installed in the computer. If they are, the libraries will be called into R.
+
+```{r}
+pacman::p_load(tidyverse, haven, knitr, DT,
+               labelled, janitor, gtsummary)
+```
+
+# 3 Reading Data into R
+
+From PISA 2022, SAS data sets (`.sas`) are available with all countries in the file for each respondent type.
+
+The code chunk below imports the *2022 Student Questionnaire* dataset downloaded from OECD's PISA Database using the `read_sas()` from the **haven** package.
+
+```{r}
+#| eval: false 
+stu <- read_sas("data/cy08msp_stu_qqq.sas7bdat")
+```
+
+The dataset is in a tibble dataframe, containing 613,744 observations (rows) across 1,279 variables (columns). Each observation corresponds to an entry from a student who participated in the 2022 PISA survey for students, and the variables correspond to information from students on various aspects of their home, family, and school background.
+
+*CNT* refers to the country of response, we can use this to filter for Singapore (where *CNT = SGP*) responses for our analysis. [`filter()`](https://dplyr.tidyverse.org/reference/filter.html) of the [**dplyr**](https://dplyr.tidyverse.org/) package allows us to perform this extraction of participating country.
+
+```{r}
+#| eval: false 
+stu_SG <- stu %>%
+  filter(CNT == "SGP")
+```
+
+The resulting data contains 6,606 rows/observations across 1,279 columns/variables.
+
+The *.rds* file format is usually smaller than its SAS file counterpart and will therefore take up less storage space. The *.rds* file will also preserve data types and classes such as factors and dates eliminating the need to redefine data types after loading the file. For fast and space efficient data storage, files can be exported as RDS and re-imported into R using [`write_rds()`](https://readr.tidyverse.org/reference/read_rds.html) and [`read_rds()`](https://readr.tidyverse.org/reference/read_rds.html) respectively.
+
+```{r}
+#| eval: false 
+write_rds(stu_SG, "data/stu_SG.rds")
+```
+
+```{r}
+stu_SG <- read_rds("data/stu_SG.rds")
+```
+
+# 4 Data Wrangling
+
+Below chart provides an overview of the different categories the team hopes to focus on to understand their impact on student scores.
+
+```{mermaid}
+%%| fig-width: 8
+%%| echo: false
+
+flowchart TD
+
+    A[2022 PISA Survey Student Questionnaire]-.-> A11[Gender]
+    A -.-> A12[Socio-economic]
+    A -.-> A13[Wellbeing]
+    A -.-> A14[Attitude]   
+    A -.-> A15[Environment] 
+    A -.-> A16[Schools] 
+
+
+```
+
+## 4.1 Filtering for required dataset
+
+After perusing through the [Codebook](https://webfs.oecd.org/pisa2022/CY08MSP_CODEBOOK_5thDecember23.xlsx) and [Technical Report](https://www.oecd.org/pisa/data/pisa2022technicalreport/), the team narrowed down the questions from the survey that would yield insightful results. The names of the columns are stored in a vector named *colname*. To filter the raw dataset with the columns, we use `select()` function of [**readr**](https://readr.tidyverse.org/) package to identify all the variables listed out in the *colname* vector.
+
+```{r}
+colname <- c("ST034Q06TA", "ST265Q03JA", "ST270Q03JA", "ST004D01T", "ST296Q01JA", "ST296Q02JA", "ST296Q03JA", "STRATUM", "HISCED", "IMMIG", "ST022Q01TA", "ST230Q01JA", "ST250D06JA", "ST250D07JA", "ST251Q01JA", "ST255Q01JA", "EXERPRAC", "ST250Q01JA", "WORKHOME", "ST268Q01JA", "ST268Q02JA", "ST268Q03JA")
+```
+
+The following code chunk serves the following purpose:
+
+-   `select()` function to retain the following columns:
+
+    -   Variables identified in *colname* and
+
+    -   Columns that starts with "PV" and contains either "MATH", "SCIE", or "READ" to extract the plausible values of scores related to the subjects of Mathematics, Science, and Reading. This is performed using a combination of `starts_with()` and `contains()`.
+
+        -   `starts_with()`: Matches the beginning of the column name with "PV", and
+
+        -   `contains()`: Searches for columns containing three alternative subjects to be matched.
+
+-   `mutate()` to create 3 new variables to store the mean plausible values for each subject for each row using `rowMeans()` and `across()`.
+
+```{r}
+stu_SG_filtered <- 
+  stu_SG %>% 
+
+  # Retains desired variables
+  select(all_of(colname), starts_with("PV") & contains(c("MATH", "READ", "SCIE"))) %>% 
+
+  # Calculates the mean of plausible values for each subject per student
+  mutate(Math = rowMeans(across(starts_with("PV") & contains("MATH")), na.rm = TRUE),
+         Reading = rowMeans(across(starts_with("PV") & contains("READ")), na.rm = TRUE),
+         Science = rowMeans(across(starts_with("PV") & contains("SCIE")), na.rm = TRUE),
+         ) %>% 
+  
+  # Drops Plausible Values columns
+  select(-starts_with("PV"))
+```
+
+`stu_SG_filtered` contains 6606 observations across 25 variables.
+
+```{r}
+stu_SG_filtered %>%  
+  generate_dictionary() %>% 
+  kable() %>% 
+  kableExtra::kable_styling(bootstrap_options = c("hover", "condensed", "responsive"),
+                            fixed_thead = T)
+```
+
+## 4.2 Renaming Columns
+
+```{r}
+stu_SG_filtered <-
+  stu_SG_filtered %>% 
+  dplyr::rename(
+    "Loneliness" = "ST034Q06TA",
+    "ClassroomSafety" = "ST265Q03JA",
+    "TeacherSupport" = "ST270Q03JA",
+    "Gender" = "ST004D01T",
+    "Homework_Math" = "ST296Q01JA",
+    "Homework_Reading" = "ST296Q02JA",
+    "Homework_Science" = "ST296Q03JA",
+    "SchoolType" = "STRATUM",
+    "ParentsEducation" = "HISCED",
+    "Immigration" = "IMMIG",
+    "HomeLanguage" = "ST022Q01TA",
+    "Sibling" = "ST230Q01JA",
+    "Aircon" = "ST250D06JA",
+    "Helper" = "ST250D07JA",
+    "Vehicle" = "ST251Q01JA",
+    "Books" = "ST255Q01JA",
+    "Exercise" = "EXERPRAC",
+    "OwnRoom" = "ST250Q01JA",
+    "FamilyCommitment" = "WORKHOME",
+    "Preference_Math" = "ST268Q01JA",
+    "Preference_Reading" = "ST268Q02JA",
+    "Preference_Science" = "ST268Q03JA"
+  )
+```
+
+```{r}
+write.csv(stu_SG_filtered, "data/stu_SG_filtered.csv")
+```
+
+
+## 4.3 Recoding Questionnaire Responses
+
+There are several types of responses for the Student's Questionnaire. We store all the response levels for each question in separate vectors and subsequently combine to create a global dictionary named *dicts*.
+
+```{r}
+Books <- c('1' = "0",
+               '2' = "1 - 10",
+               '3' = "11 - 25",
+               '4' = "26 - 100",
+               '5' = "101 - 200",
+               '6' = "201-500",
+               '7' = ">500")
+
+HomeLanguage <- c('1' = "English",
+             '2' = "Others")
+
+# Likert Scales: Strong Disagree to Strongly Agree
+Preference_Math <- c('1' = "Strongly Disagree",
+           '2' = "Disagree",
+           '3' = "Agree",
+           '4' = "Strongly Agree")
+
+Preference_Reading <- c('1' = "Strongly Disagree",
+           '2' = "Disagree",
+           '3' = "Agree",
+           '4' = "Strongly Agree")
+
+Preference_Science <- c('1' = "Strongly Disagree",
+           '2' = "Disagree",
+           '3' = "Agree",
+           '4' = "Strongly Agree")
+
+# Likert Scales: Strong Agree to Strongly Disagree
+Loneliness <- c('1' = "Strongly Agree",
+           '2' = "Agree",
+           '3' = "Disagree",
+           '4' = "Strongly Disagree")
+
+ClassroomSafety <- c('1' = "Strongly Agree",
+           '2' = "Agree",
+           '3' = "Disagree",
+           '4' = "Strongly Disagree")
+
+# Binary
+SchoolType <- c('SGP01' = "Public",
+           'SGP03' = "Private")
+
+OwnRoom <- c('1' = "Yes", 
+                '2' = "No")
+
+Aircon <- c('7020001' = "Yes",
+            '7020002' = "No",
+            .default = NA
+            )
+
+Helper <- c('7020001' = "Yes",
+            '7020002' = "No",
+            .default = NA)
+
+# Frequency responses
+Exercise <- c('0' = "0",
+          '1' = "1", 
+          '2' = "2",
+          '3' = "3",
+          '4' = "4",
+          '5' = "5",
+          '6' = "6",
+          '7' = "7",
+          '8' = "8",
+          '9' = "9",
+          '10' = "10")
+
+FamilyCommitment <- c('0' = "0",
+          '1' = "1", 
+          '2' = "2",
+          '3' = "3",
+          '4' = "4",
+          '5' = "5",
+          '6' = "6",
+          '7' = "7",
+          '8' = "8",
+          '9' = "9",
+          '10' = "10")
+
+# Time Periods
+Homework_Math <- c('1' = "≤ 0.5hr",
+                '2' = "0.5hr - 1hr",
+                '3' = "1hr - 2hr",
+                '4' = "2hr - 3hr",
+                '5' = "3 - 4 hr",
+                '6' = "> 4hr")
+
+Homework_Reading <- c('1' = "≤ 0.5hr",
+                '2' = "0.5hr - 1hr",
+                '3' = "1hr - 2hr",
+                '4' = "2hr - 3hr",
+                '5' = "3 - 4 hr",
+                '6' = "> 4hr")
+
+Homework_Science <- c('1' = "≤ 0.5hr",
+                '2' = "0.5hr - 1hr",
+                '3' = "1hr - 2hr",
+                '4' = "2hr - 3hr",
+                '5' = "3 - 4 hr",
+                '6' = "> 4hr")
+
+# Gender
+Gender <- c('1' = "Female",
+            '2' = "Male")
+
+
+# Immigrant Background
+Immigration <- c('1' = "Native",
+           '2' = "2nd Generation",
+           '3' = "3rd Generation")
+
+# Education Level
+ParentsEducation <- c('1'="Pre-Primary",   
+         '2'="Primary", 
+         '3'="Secondary",
+         '4'='Secondary',
+         '6'="Post-Secondary",
+         '7'="Post-Secondary",
+         '8'="Tertiary",
+         '9'="Tertiary",
+         '10'="Tertiary")
+
+# Posessions
+Vehicle <- c('1' = "0",
+            '2' = "1",
+            '3' = "2",
+            '4' = "≥3")
+
+Sibling <- c('1' = "0",
+            '2' = "1",
+            '3' = "2",
+            '4' = "≥3")
+
+# Support
+TeacherSupport <- c('1' = "Every lesson",
+            '2' = "Most lesson",
+            '3' = "Some lessons",
+            '4' = "Never or almost never")
+
+# Global Dictionary
+dicts <- list(
+  "Loneliness" = Loneliness,
+  "ClassroomSafety" = ClassroomSafety,
+  "TeacherSupport" = TeacherSupport,
+  "Gender" = Gender,
+  "Homework_Math" = Homework_Math,
+  "Homework_Reading" = Homework_Reading,
+  "Homework_Science" = Homework_Science,
+  "SchoolType" = SchoolType,
+  "ParentsEducation" = ParentsEducation,
+  "Immigration" = Immigration,
+  "HomeLanguage" = HomeLanguage,
+  "Sibling" = Sibling,
+  "Aircon" = Aircon,
+  "Helper" = Helper,
+  "Vehicle" = Vehicle,
+  "Books" = Books,
+  "Exercise" = Exercise,
+  "OwnRoom" = OwnRoom,
+  "FamilyCommitment" = FamilyCommitment,
+  "Preference_Math" = Preference_Math,
+  "Preference_Reading" = Preference_Reading,
+  "Preference_Science" = Preference_Science
+)
+
+```
+
+The helper function below attempts to recode all of the columns based on the global recode dictionary, *dicts*, using functions from the **base R**, **tidyr**, and **rlang** packages:
+
+-   `names(x)` retrieves the column names of the input dataframe
+
+-   `recode()` helps to recode values in the columns using *dicts*
+
+-   `!!sym(x_nm)` unquotes and evaluates the column name that matches the names of the dictionaries, while `!!!dicts[[x_nm]]` unquotes and splices the global recoding dictionary corresponding to the column name.
+
+```{r}
+rcd <- function(x) {
+  x_nm <- names(x)
+  mutate(x, !! x_nm := recode(!! sym(x_nm), !!! dicts[[x_nm]]))
+}
+```
+
+[`lmap_at()`](https://purrr.tidyverse.org/reference/lmap.html) of the **purrr** package applies the helper function to the column in the dataframe where the column name matches the keys of the dictionaries.
+
+```{r}
+stu_SG_rcd <-lmap_at(stu_SG_filtered, 
+        names(dicts),
+        rcd)
+```
+
+```{r}
+#| echo: false
+# Setting theme
+theme_gtsummary_compact()
+
+stu_SG_rcd %>% 
+  tbl_summary(missing_text = "NA") %>% 
+  add_n() %>% 
+  modify_caption("**Table of Variable Summary**") %>%
+  bold_labels()
+```
+
+## 4.2 Data Health
+
+[`get_dupes()`](https://sfirke.github.io/janitor/reference/get_dupes.html) of the **janitor** package is used to hunt for duplicate records. The results show that there are no duplicated rows.
+
+```{r}
+get_dupes(stu_SG_rcd)
+```
+
+# 5 Our Final Dataset
+
+```{r}
+#| echo: false
+DT::datatable(stu_SG_rcd,
+              filter = 'top',
+              class = "compact",
+              options = list(pageLength = 5, dom = 'tip'))
+```
+
+
+```{r}
+write.csv(stu_SG_rcd, "data/stu_SG_rcd.csv")
+```
+
