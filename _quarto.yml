@@ -19,7 +19,7 @@ website:
       - text: "Discovery"
         menu: 
           - text: Data Wrangling
-            href: "phase1/datawrangling.html"
+            href: "phase1/dataprep.html"
           - text: Variables
             href: "phase1/variables.html"            
           - text: Prototype
