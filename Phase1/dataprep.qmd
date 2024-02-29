@@ -173,11 +173,33 @@ stu_SG_filtered <-
 ```
 
 ```{r}
+#| echo: false
+glimpse(stu_SG_filtered)
+```
+
+
+```{r}
+#| eval: false
 write.csv(stu_SG_filtered, "data/stu_SG_filtered.csv")
 ```
 
 
-## 4.3 Recoding Questionnaire Responses
+## 4.3 Dropping Invalid Responses
+
+There are some responses which are marked as invalid, or missing, in the *Helper* and *Aircon* variables. In this next step, we remove these responses and replace them with NAs.
+
+```{r}
+stu_SG_encode <- stu_SG_filtered %>% 
+  mutate(Aircon = na_if(Aircon, "9999999"),
+         Helper = na_if(Helper, "9999999"))
+```
+
+```{r}
+#| eval: false
+write.csv(stu_SG_encode, "data/stu_SG_encode.csv")
+```
+
+## 4.4 Recoding Questionnaire Responses
 
 There are several types of responses for the Student's Questionnaire. We store all the response levels for each question in separate vectors and subsequently combine to create a global dictionary named *dicts*.
 
@@ -367,7 +389,7 @@ rcd <- function(x) {
 [`lmap_at()`](https://purrr.tidyverse.org/reference/lmap.html) of the **purrr** package applies the helper function to the column in the dataframe where the column name matches the keys of the dictionaries.
 
 ```{r}
-stu_SG_rcd <-lmap_at(stu_SG_filtered, 
+stu_SG_rcd <-lmap_at(stu_SG_encode, 
         names(dicts),
         rcd)
 ```
@@ -384,7 +406,7 @@ stu_SG_rcd %>%
   bold_labels()
 ```
 
-## 4.2 Data Health
+## 4.5 Data Health
 
 [`get_dupes()`](https://sfirke.github.io/janitor/reference/get_dupes.html) of the **janitor** package is used to hunt for duplicate records. The results show that there are no duplicated rows.
 
@@ -404,6 +426,7 @@ DT::datatable(stu_SG_rcd,
 
 
 ```{r}
+#| eval: false
 write.csv(stu_SG_rcd, "data/stu_SG_rcd.csv")
 ```
 
