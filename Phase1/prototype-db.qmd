@@ -1,0 +1,167 @@
+---
+title: "Prototype: Dashboard"
+title-block-banner: true
+toc: true
+editor: visual
+execute: 
+  freeze: true
+  warning: false
+  #echo: false
+  #message: false
+  html:
+    code-fold: True
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: true
+---
+
+# Dashboard 
+
+## Variables Introduction
+
+```{r}
+pacman::p_load(tidyverse, DT, plotly)
+```
+
+```{r}
+stu <- read_csv("data/stu_SG_rcd.csv")
+var <- read_csv("data/var.csv")
+
+```
+
+```{r}
+DT::datatable(var,
+              class = "compact",
+              options = list(hover = TRUE))
+```
+
+## Summary Statistics 
+
+```{r}
+Math <- round(summary(stu$Math),1)
+Reading <- round(summary(stu$Reading),1)
+Science <- round(summary(stu$Science),1)
+
+db_summarystats <- as.data.frame(rbind(Math, Reading, Science))
+db_summarystats
+```
+
+```{r}
+brks <- seq(5, 320000, 1000)
+clrs <- colorRampPalette(c("white", "#6baed6"))(length(brks) + 1)
+
+datatable(db_summarystats) %>% 
+  formatStyle(c("Median", "Mean"),
+              backgroundColor = styleInterval(brks, clrs))
+```
+
+# Ternary Plot
+
+```{r}
+stu <- stu %>% 
+  mutate(rank_Math = round(percent_rank(Math)*100, 0),
+         rank_Reading = round(percent_rank(Reading)*100, 0),
+         rank_Science = round(percent_rank(Science)*100, 0),
+         tooltip = paste0("Math: ", round(Math,0), " | Percentile: ", rank_Math,
+                          "\nReading: ", round(Reading,0), " | Percentile: ", rank_Reading,
+                          "\nScience: ", round(Science),  " | Percentile: ", rank_Science))
+```
+
+
+```{r}
+# reusable function for creating annotation object
+label <- function(txt) {
+  list(
+    text = txt, 
+    x = 0.1, y = 1,
+    ax = 0, ay = 0,
+    xref = "paper", yref = "paper", 
+    align = "center",
+    font = list(family = "serif", size = 15, color = "white"),
+    bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
+  )
+}
+
+# reusable function for axis formatting
+axis <- function(txt) {
+  list(
+    title = txt, 
+    #tickformat = ".0%", 
+    tickfont = list(size = 10)
+  )
+}
+
+ternaryAxes <- list(
+  aaxis = axis("Math"), 
+  baxis = axis("Reading"), 
+  caxis = axis("Science")
+)
+
+# Initiating a plotly visualization 
+plot_ly(
+  stu, 
+  a = ~Math, 
+  b = ~Reading, 
+  c = ~Science, 
+  color = I("black"), 
+  type = "scatterternary") %>%
+  layout(
+    annotations = label("Ternary Markers"), 
+    ternary = ternaryAxes
+  ) 
+```
+
+```{r}
+df_ternplot <- stu %>%  
+  plot_ly() %>% 
+  add_trace(type = "scatterternary",
+            mode = 'markers',
+            a = ~rank_Math,
+            b = ~rank_Reading,
+            c = ~rank_Science,
+            text = ~tooltip,
+            hoverinfo = none,
+            opacity = 0.6,
+            marker = list(color = '#4E7880',
+                          opacity = 0.6,
+                          size = 6,
+                          line = list('width' = 0)
+                          )
+            ) %>%
+  layout(
+    ternary = list(
+      #xsum = 100,
+      aaxis = axis('Math'),
+      baxis = axis('Reading'),
+      caxis = axis('Science')
+        )
+      )
+      
+df_ternplot
+```
+
+```{r}
+plot_ly(stu,
+        type = "scatterternary",
+        mode = 'markers',
+        a = ~rank_Math,
+        b = ~rank_Reading,
+        c = ~rank_Science,
+        text = ~tooltip,
+        opacity = 0.6,
+        marker = list(color = '#4E7880',
+                          opacity = 0.6,
+                          size = 6,
+                          line = list('width' = 1, color = '#FFFFFF')
+                          )
+            ) %>%
+  layout(
+    ternary = list(
+      xsum = 100,
+      aaxis = list(title = 'Math'),
+      baxis = list(title ='Reading'),
+      caxis = list(title ='Science')
+        )
+      )
+```
+

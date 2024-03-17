@@ -114,8 +114,6 @@ The following code chunk serves the following purpose:
 
 -   `mutate()` to create 3 new variables to store the mean plausible values for each subject for each row using `rowMeans()` and `across()`.
 
--   `na.omit()` to drop observations with NA values.
-
 ```{r}
 stu_SG_filtered <- 
   stu_SG %>% 
@@ -130,11 +128,10 @@ stu_SG_filtered <-
          ) %>% 
   
   # Drops Plausible Values columns
-  select(-starts_with("PV")) %>% 
-  na.omit()
+  select(-starts_with("PV"))
 ```
 
-`stu_SG_filtered` contains 5183 observations across 25 variables.
+`stu_SG_filtered` contains 5183 observations across 26 variables.
 
 ```{r}
 stu_SG_filtered %>%  
@@ -150,6 +147,7 @@ stu_SG_filtered %>%
 stu_SG_filtered <-
   stu_SG_filtered %>% 
   dplyr::rename(
+    "SchoolID" = "CNTSCHID",    
     "Loneliness" = "ST034Q06TA",
     "ClassroomSafety" = "ST265Q03JA",
     "TeacherSupport" = "ST270Q03JA",
@@ -182,18 +180,16 @@ glimpse(stu_SG_filtered)
 
 ## 4.3 Dropping Invalid Responses
 
-There are some responses which are marked as invalid, or missing, in the *Helper* and *Aircon* variables. In this next step, we remove these responses and replace them with NAs.
+There are some responses which are marked as invalid, or missing in our data. In the *Helper* and *Aircon* variables, these are coded as "9999999". In this next step, we remove these responses and drop them. 
 
 ```{r}
-stu_SG_encode <- stu_SG_filtered %>% 
+stu_SG_filtered <- stu_SG_filtered %>% 
   mutate(Aircon = na_if(Aircon, "9999999"),
-         Helper = na_if(Helper, "9999999"))
+         Helper = na_if(Helper, "9999999")) %>% 
+  na.omit()
 ```
 
-```{r}
-#| eval: false
-write_csv(stu_SG_encode, "data/stu_SG_encode.csv")
-```
+`stu_SG_filtered` now contains 5158 observations across 26 variables.
 
 ## 4.4 Recoding and Ranking Questionnaire Responses
 
@@ -246,13 +242,10 @@ OwnRoom <- c('1' = "Yes",
                 '2' = "No")
 
 Aircon <- c('7020001' = "Yes",
-            '7020002' = "No",
-            .default = NA
-            )
+            '7020002' = "No")
 
 Helper <- c('7020001' = "Yes",
-            '7020002' = "No",
-            .default = NA)
+            '7020002' = "No")
 
 # Frequency responses
 Exercise <- c('0' = "0",
@@ -385,7 +378,7 @@ rcd <- function(x) {
 [`lmap_at()`](https://purrr.tidyverse.org/reference/lmap.html) of the **purrr** package applies the helper function to the column in the dataframe where the column name matches the keys of the dictionaries.
 
 ```{r}
-stu_SG_rcd <-lmap_at(stu_SG_encode, 
+stu_SG_rcd <-lmap_at(stu_SG_filtered, 
         names(dicts),
         rcd)
 ```
@@ -396,6 +389,7 @@ are then used to set the order for ordinal variables.
 ```{r}
 stu_SG_rcd <- stu_SG_rcd %>%
   mutate_if(is.character, as.factor) %>% 
+  mutate(SchoolID = factor(SchoolID)) %>% 
   mutate(Books = fct_relevel(Books, 
                              "0",
                              "1 - 10",
@@ -506,7 +500,7 @@ stu_SG_rcd <- stu_SG_rcd %>%
 # Setting theme
 theme_gtsummary_compact()
 
-stu_SG_rcd %>% 
+stu_SG_rcd[1:23] %>% 
   tbl_summary(missing_text = "NA") %>% 
   add_n() %>% 
   modify_caption("**Table of Variable Summary**") %>%
@@ -535,5 +529,11 @@ DT::datatable(stu_SG_rcd,
 ```{r}
 #| eval: false
 write_csv(stu_SG_rcd, "data/stu_SG_rcd.csv")
+write_rds(stu_SG_rcd, "data/stu_SG_rcd.rds")
+
+```
+
+```{r}
+colSums(is.na(stu_SG_rcd))
 ```
 
