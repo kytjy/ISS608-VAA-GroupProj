@@ -20,11 +20,11 @@ execute:
 ## Variables Introduction
 
 ```{r}
-pacman::p_load(tidyverse, DT, plotly)
+pacman::p_load(tidyverse, DT, plotly, caret)
 ```
 
 ```{r}
-stu <- read_csv("data/stu_SG_rcd.csv")
+stu <- read_rds("data/stu_SG_rcd.rds")
 var <- read_csv("data/var.csv")
 
 ```
@@ -163,5 +163,26 @@ plot_ly(stu,
       caxis = list(title ='Science')
         )
       )
+```
+# Other Dashboard Features
+
+```{r}
+    ggplotly(
+      ggplot(data = stu, 
+             aes(x = stu$Math)) +
+        geom_histogram(binwidth = 2.5) +
+        ylab("No. of Students")+
+        geom_rug(sides = "t", length = unit(0.3, "cm")))
+```
+
+
+# Decision Tree 
+
+```{r}
+dt_selected_variables <- c("Math", "Loneliness", "Helper", "Aircon")
+```
+
+```{r}
+dt_data <- stu %>%  select(all_of(dt_selected_variables))
 ```
 

@@ -1,5 +1,0 @@
----
-title: "User Guide"
----
-
-![](Images/placeholder.PNG){fig-align="center"}
