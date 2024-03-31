@@ -14,7 +14,7 @@ website:
     right: 
       - text: "Team"
         href: about.qmd
-      - text: "Proposal"
+      - text: "Introduction"
         href: "proposal/proposal.html"
       - text: "Discovery"
         menu: 
@@ -22,14 +22,12 @@ website:
             href: "phase1/dataprep.html"
           - text: Variables
             href: "phase1/variables.html"            
-          - text: Prototype
-            href: "phase1/prototype.html"        
       - text: "Shiny App"
         menu: 
           - text: User Guide
-            href: "shinyapp/userguide.html"
+            href: "shinyapp/userguide.pdf"
           - text: Shiny App
-            href: "shinyapp/shinyapp.html"
+            href: "https://projectpisa.shinyapps.io/projectPISA/"
       - text: "Project Poster"
         href:  "poster/poster.html"            
   
